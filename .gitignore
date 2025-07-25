@@ -1,20 +1,31 @@
-# macOS 시스템 파일
+# macOS
 .DS_Store
 
-# Windows 시스템 파일
+# Windows
 Thumbs.db
 Desktop.ini
 
-# Python 관련 예시
+# Python
 __pycache__/
 *.py[cod]
 venv/
 env/
+.venv/
+.env/
+*.sqlite3
+*.db
+.mypy_cache/
+.pytest_cache/
+pip-log.txt
 
-# Node.js 관련 예시
+# Node.js(React)
 node_modules/
 npm-debug.log*
+build/
+dist/
+.env
 
-# VSCode 등 에디터 설정
+# VSCode & IDE
 .vscode/
 *.code-workspace
+.idea/
