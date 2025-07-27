@@ -35,3 +35,4 @@ dist/
 
 # key
 backend/service_account.json
+backend/client_secret.json
