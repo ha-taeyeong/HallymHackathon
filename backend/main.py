@@ -8,12 +8,23 @@ import requests
 import json
 from typing import List, Optional
 import traceback
+from dotenv import load_dotenv
 import os
 
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
 from parser import extract_locations  # 장소 추출 함수
+
+load_dotenv()  # .env 파일에서 환경변수 로드
+
+# Google OAuth 설정 (환경 변수 또는 기본값)
+CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:8001/auth/callback")
+
+# 임시 메모리 토큰 저장소
+user_tokens = {}
 
 
 app = FastAPI()
@@ -33,6 +44,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Pydantic 모델 정의
+class ScheduleItem(BaseModel):
+    time: dict = None
+    location: Optional[str] = None
+    event: Optional[str] = None
 
 class TextRequest(BaseModel):
     text: str
