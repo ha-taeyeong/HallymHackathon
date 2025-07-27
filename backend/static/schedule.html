@@ -1,0 +1,104 @@
+<!-- static/schedule.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>일정 등록 및 추출</title>
+    <style>
+        body {
+            max-width: 800px;
+            margin: 20px auto;
+            font-family: Arial, sans-serif;
+        }
+        textarea {
+            width: 100%;
+            font-size: 16px;
+            resize: vertical;
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        pre {
+            background-color: #eee;
+            border: 1px solid #ccc;
+            padding: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <h2>일정 자동 등록</h2>
+
+    <label for="input-schedule">일정 텍스트 입력</label><br>
+    <textarea id="input-schedule" rows="5" placeholder="예: 8월 1일 오후 3시 강남역 카페 미팅"></textarea><br>
+
+    <button onclick="extractSchedule()">일정 추출</button>
+    <button onclick="saveSchedule()">구글 캘린더에 저장</button>
+
+    <h3>추출 결과</h3>
+    <pre id="output-schedule">여기에 추출된 일정 데이터가 표시됩니다.</pre>
+
+
+    <script>
+        async function extractSchedule() {
+            const text = document.getElementById('input-schedule').value.trim();
+            if (!text) {
+                alert('일정을 입력해주세요.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/parse-multi-schedule/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+                if (!res.ok) throw new Error(`Error: ${res.statusText}`);
+
+                const data = await res.json();
+                document.getElementById('output-schedule').textContent = JSON.stringify(data.schedules, null, 2);
+            } catch (err) {
+                alert('일정 추출에 실패했습니다: ' + err.message);
+            }
+        }
+
+        async function saveSchedule() {
+            const raw = document.getElementById('output-schedule').textContent.trim();
+            if (!raw) {
+                alert('먼저 일정을 추출해주세요.');
+                return;
+            }
+
+            let schedules;
+            try {
+                schedules = JSON.parse(raw);
+            } catch {
+                alert('추출 결과가 올바른 JSON 형식이 아닙니다.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/register-google-calendar/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(schedules)
+                });
+                if (!res.ok) throw new Error(`Error: ${res.statusText}`);
+
+                const result = await res.json();
+                alert('일정이 구글 캘린더에 저장되었습니다! 등록된 이벤트 ID:\n' + JSON.stringify(result.created_event_ids, null, 2));
+            } catch (err) {
+                alert('일정 저장 실패: ' + err.message);
+            }
+        }
+    </script>
+</body>
+</html>
