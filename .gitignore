@@ -34,5 +34,4 @@ dist/
 ~$*.pptx
 
 # key
-backend/service_account.json
-backend/client_secret.json
+.env
