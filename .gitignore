@@ -32,3 +32,6 @@ dist/
 
 # docs
 ~$*.pptx
+
+# key
+backend/service_account.json
