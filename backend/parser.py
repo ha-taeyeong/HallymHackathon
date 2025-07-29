@@ -6,14 +6,15 @@ def get_nlp():
     global _nlp
     if _nlp is None:
         try:
+            print("Trying to load spaCy model ko_core_news_lg ...")
             _nlp = spacy.load("ko_core_news_lg")
-        except OSError:
-            raise RuntimeError(
-                "ko_core_news_lg 모델이 설치되어 있어야 합니다.\n"
-                "다음 명령어로 설치하세요:\n"
-                "python -m spacy download ko_core_news_lg"
-            )
+            print("Model loaded successfully.")
+        except Exception as e:
+            # 어떤 예외가 발생하는지 출력
+            print(f"[ERROR] Failed to load spaCy model: {e}")
+            raise RuntimeError(f"런타임 오류: {e}")
     return _nlp
+
 
 
 def extract_locations(text: str):
@@ -28,7 +29,8 @@ def extract_locations(text: str):
         if loc in text and loc not in entities:
             entities.append(loc)
 
-    # 필요하면 중복 제거
     entities = list(dict.fromkeys(entities))
+
+    print(f"[DEBUG] extract_locations called with: '{text}', entities: {entities}")
 
     return entities

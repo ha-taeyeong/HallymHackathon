@@ -193,46 +193,48 @@ def parse_multi_schedule(req: TextRequest):
             status_code=400, detail="text 필드는 반드시 비어있지 않은 문자열이어야 합니다."
         )
 
-    data = {
-        "text": req.text,
-        "locale": "ko_KR",
-        "dims": '["time"]',
-        "tz": "Asia/Seoul",
-    }
-    print("[DEBUG] 보내는 데이터:", data)
+    # 1. '일정별'로 문장 분리 (예: 쉼표로 쪼개기 등, 상황 맞게 보완)
+    parts = [s.strip() for s in req.text.split(",") if s.strip()]
 
-    duckling_url = "http://localhost:8000/parse"
-    try:
-        response = requests.post(duckling_url, data=data)
-        response.raise_for_status()
-        times = response.json()
-        print("[DEBUG] Duckling 파싱 결과 times:", times)
-    except requests.RequestException as e:
-        print("Duckling 통신 오류:", e)
-        traceback.print_exc()
-        raise HTTPException(status_code=502, detail=f"Duckling API 호출 실패: {e}")
+    schedules = []
+    for part in parts:
+        # 2. 각 일정 문장별 추출
+        # (Duckling으로 시간 추출)
+        duckling_url = "http://localhost:8000/parse"
+        data = {
+            "text": part,
+            "locale": "ko_KR",
+            "dims": '["time"]',
+            "tz": "Asia/Seoul",
+        }
+        try:
+            response = requests.post(duckling_url, data=data)
+            response.raise_for_status()
+            times = response.json()
+            time = times[0] if times else None
+        except Exception as e:
+            time = None
 
-    try:
-        locations = extract_locations(req.text)
-    except Exception as e:
-        print("장소 추출 실패:", e)
-        traceback.print_exc()
-        locations = []
+        # (장소 추출)
+        try:
+            locations = extract_locations(part)
+            location = locations[0] if locations else None
+            print(f"[DEBUG] 입력 문장: '{part}' -> 추출된 장소 리스트: {locations}")
+        except Exception as e:
+            location = None
+            print(f"[ERROR] 장소 추출 실패: {e}")
 
-    events = [kw for kw in event_keywords if kw in req.text]
+        # (이벤트 추출)
+        event = next((kw for kw in event_keywords if kw in part), None)
 
-    def smart_match_schedules(times, locations, events):
-        schedules = []
-        for i, time in enumerate(times):
-            location = (
-                locations[i] if i < len(locations) else (locations[0] if locations else None)
-            )
-            event = events[i] if i < len(events) else (events[0] if events else None)
-            schedules.append({"time": time, "location": location, "event": event})
-        return schedules
+        schedules.append({
+            "time": time,
+            "location": location,
+            "event": event
+        })
 
-    schedules = smart_match_schedules(times, locations, events)
     return {"schedules": schedules}
+
 
 
 # ----------------------------------------
@@ -261,27 +263,127 @@ def get_authenticated_service(user_key: str = "default"):
 
 
 # ----------------------------------------
-# 9) API: 구글 캘린더에 일정 등록
+# 9) 일정 중복 체크 함수
+# ----------------------------------------
+@app.post("/check-duplicates/")
+def check_duplicates(items: List[ScheduleItem], user_key: str = "default"):
+    """
+    받은 일정들 중 Google Calendar 내 중복 일정 있는지 확인 후 결과를 반환하는 API 함수입니다.
+
+    - items: 클라이언트로부터 받은 일정 리스트
+    - user_key: 인증된 유저 토큰 키 (기본값 "default")
+    """
+    try:
+        # 저장된 OAuth 토큰을 활용해 인증된 Google Calendar API 서비스 객체 생성
+        service = get_authenticated_service(user_key)
+    except HTTPException as e:
+        # 인증 실패 시 401 에러 반환
+        raise e
+
+    import datetime
+    from zoneinfo import ZoneInfo
+
+    duplicates = []  # 중복 일정 정보 저장 리스트
+
+    # 전달받은 각 일정 아이템에 대해 중복 검사 수행
+    for schedule in items:
+        # 일정의 시간 정보가 있을 때만 처리
+        if schedule.time and schedule.time.get("value"):
+            time_obj = schedule.time
+            iso_value = None
+
+            # 시간 정보의 구조가 dict일 수 있어 중첩 검사
+            if isinstance(time_obj, dict):
+                value_obj = time_obj.get("value")
+                if isinstance(value_obj, dict):
+                    # 다시 dict인 경우 내부 'value' 키에서 실제 ISO 시간 문자열 추출
+                    iso_value = value_obj.get("value")
+                elif isinstance(value_obj, str):
+                    iso_value = value_obj
+
+            # 시간 정보가 없으면 해당 일정 스킵
+            if not iso_value:
+                continue
+
+            # ISO 8601 문자열을 datetime 객체로 변환
+            dt = datetime.datetime.fromisoformat(iso_value)
+            # 시간대 정보가 없으면 서울 시간대로 설정, 있으면 서울 시간대로 변환
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=ZoneInfo("Asia/Seoul"))
+            else:
+                dt = dt.astimezone(ZoneInfo("Asia/Seoul"))
+
+            start_dt = dt
+            # 기본적으로 일정은 1시간 단위로 설정하여 종료 시간 계산
+            end_dt = start_dt + datetime.timedelta(hours=1)
+
+            # Google Calendar API를 이용해 해당 시간 범위 내 기존 이벤트 검색
+            existing_events_result = service.events().list(
+                calendarId="primary",
+                timeMin=start_dt.isoformat(),
+                timeMax=end_dt.isoformat(),
+                singleEvents=True,
+                orderBy="startTime"
+            ).execute()
+            # 이벤트 리스트 추출 (없으면 빈 리스트)
+            existing_events = existing_events_result.get("items", [])
+
+            # 기존 이벤트들 중 시간 범위만 겹치면 중복으로 판단
+            for ev in existing_events:
+                duplicate_event_id = ev.get("id")
+                duplicates.append({
+                    "schedule": {
+                        "summary": schedule.event or "일정",
+                        "location": schedule.location or "",
+                        "start": start_dt.isoformat(),
+                        "end": end_dt.isoformat(),
+                    },
+                    "existing_event": ev
+                })
+                # 한 개라도 중복 찾으면 다음 일정으로 넘어감
+                break
+
+    # 중복 여부와 중복 이벤트 상세 목록을 함께 반환
+    return {
+        "has_duplicates": len(duplicates) > 0,
+        "duplicates": duplicates
+    }
+
+
+
+
+# ----------------------------------------
+# 10) API: 구글 캘린더에 일정 등록
 # ----------------------------------------
 @app.post("/register-google-calendar/")
 def register_google_calendar(items: List[ScheduleItem], user_key: str = "default"):
     """
-    - POST 일정 목록으로 Google Calendar 이벤트 등록
-    - OAuth 토큰 저장소에서 인증 체크 후 API 호출
+    POST 요청으로 받은 일정 목록을 Google Calendar에 등록합니다.
+    - OAuth 토큰 저장소에서 인증 토큰을 불러와 API 호출
+    - 일정 중복 여부를 시작 시간 기준으로 확인 후
+      중복일 경우 업데이트, 없으면 새로 등록합니다.
     """
     print("[DEBUG] 받은 items:", items)
     created_ids = []
+
+    # 인증된 Google Calendar API 서비스 객체 얻기
     try:
         service = get_authenticated_service(user_key)
     except HTTPException as e:
+        # 인증 실패 시 예외 발생
         raise e
 
+    import datetime
+    from zoneinfo import ZoneInfo
+
     for schedule in items:
+        # 각 일정에 시간 정보가 있는지 확인
         if schedule.time and schedule.time.get("value"):
             try:
                 time_obj = schedule.time
                 iso_value = None
 
+                # 시간 정보 추출 (중첩 dict 또는 문자열 형태 고려)
                 if isinstance(time_obj, dict):
                     value_obj = time_obj.get("value")
                     if isinstance(value_obj, dict):
@@ -289,13 +391,12 @@ def register_google_calendar(items: List[ScheduleItem], user_key: str = "default
                     elif isinstance(value_obj, str):
                         iso_value = value_obj
 
+                # 시간이 없으면 해당 일정 스킵
                 if not iso_value:
                     print("시간 정보 없음")
                     continue
 
-                import datetime
-                from zoneinfo import ZoneInfo
-
+                # ISO 형식 문자열을 datetime 객체로 변환 및 시간대 설정
                 dt = datetime.datetime.fromisoformat(iso_value)
                 if dt.tzinfo is None:
                     dt = dt.replace(tzinfo=ZoneInfo("Asia/Seoul"))
@@ -303,8 +404,26 @@ def register_google_calendar(items: List[ScheduleItem], user_key: str = "default
                     dt = dt.astimezone(ZoneInfo("Asia/Seoul"))
 
                 start_dt = dt
-                end_dt = start_dt + datetime.timedelta(hours=1)
+                end_dt = start_dt + datetime.timedelta(hours=1)  # 기본 1시간 일정
 
+                # 해당 시간 범위 내 기존 이벤트 검색 (중복 확인용)
+                existing_events_result = service.events().list(
+                    calendarId="primary",
+                    timeMin=start_dt.isoformat(),
+                    timeMax=end_dt.isoformat(),
+                    singleEvents=True,
+                    orderBy="startTime"
+                ).execute()
+                existing_events = existing_events_result.get("items", [])
+
+                duplicate_event_id = None
+
+                # 시간 범위 내 이벤트가 있으면 중복으로 판단 (제목/위치 비교 없이)
+                for ev in existing_events:
+                    duplicate_event_id = ev["id"]
+                    break
+
+                # 구글 캘린더에 보낼 이벤트 데이터 구성
                 event_body = {
                     "summary": schedule.event or "일정",
                     "location": schedule.location or "",
@@ -312,12 +431,29 @@ def register_google_calendar(items: List[ScheduleItem], user_key: str = "default
                     "end": {"dateTime": end_dt.isoformat(), "timeZone": "Asia/Seoul"},
                 }
 
-                # Google Calendar API 호출 (기본 캘린더에 이벤트 등록)
-                event = service.events().insert(calendarId="primary", body=event_body).execute()
-                print("Event created:", event.get("htmlLink"))
+                if duplicate_event_id:
+                    # 중복 일정이 있으면 업데이트(덮어쓰기)
+                    event = service.events().update(
+                        calendarId="primary",
+                        eventId=duplicate_event_id,
+                        body=event_body
+                    ).execute()
+                    print("Event updated:", event.get("htmlLink"))
+                else:
+                    # 중복 없으면 새로 등록
+                    event = service.events().insert(
+                        calendarId="primary",
+                        body=event_body
+                    ).execute()
+                    print("Event created:", event.get("htmlLink"))
+
+                # 생성 또는 업데이트된 이벤트 ID 저장
                 created_ids.append(event.get("id"))
+
             except Exception as e:
                 print("이벤트 등록 실패:", e)
+                import traceback
                 traceback.print_exc()
 
+    # 등록(또는 업데이트)된 이벤트 ID 목록 반환
     return {"created_event_ids": created_ids}

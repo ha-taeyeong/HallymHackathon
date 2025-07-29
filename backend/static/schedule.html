@@ -50,6 +50,8 @@
     <script>
         async function extractSchedule() {
             const text = document.getElementById('input-schedule').value.trim();
+            console.log("입력 텍스트:", text);
+            alert("추출 함수 호출됨"); // 임시 알림
             if (!text) {
                 alert('일정을 입력해주세요.');
                 return;
@@ -64,6 +66,7 @@
                 if (!res.ok) throw new Error(`Error: ${res.statusText}`);
 
                 const data = await res.json();
+                console.log('API 응답 데이터:', data);
                 document.getElementById('output-schedule').textContent = JSON.stringify(data.schedules, null, 2);
             } catch (err) {
                 alert('일정 추출에 실패했습니다: ' + err.message);
@@ -86,15 +89,44 @@
             }
 
             try {
-                const res = await fetch('/register-google-calendar/', {
+                // 1) 중복 일정 있는지 먼저 확인
+                const checkRes = await fetch('/check-duplicates/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(schedules)
                 });
-                if (!res.ok) throw new Error(`Error: ${res.statusText}`);
+                if (!checkRes.ok) throw new Error(`Error: ${checkRes.statusText}`);
 
-                const result = await res.json();
-                alert('일정이 구글 캘린더에 저장되었습니다! 등록된 이벤트 ID:\n' + JSON.stringify(result.created_event_ids, null, 2));
+                const checkData = await checkRes.json();
+
+                if (checkData.has_duplicates) {
+                    // 중복 내용 간략 표시 (원하면 더 상세하게 갈 수 있음)
+                    const dupInfo = checkData.duplicates.map(d => {
+                        return `기존 일정: ${d.existing_event.summary} @ ${d.existing_event.location} (${d.existing_event.start.dateTime || d.existing_event.start.date})`;
+                    }).join('\n');
+
+                    const overwrite = confirm(`중복된 일정이 존재합니다:\n${dupInfo}\n\n덮어쓰시겠습니까?`);
+                    
+                    if (!overwrite) {
+                        alert('저장이 취소되었습니다.');
+                        return;
+                    }
+                }
+
+                // 2) 덮어쓰기 동의하거나 중복 없으면 실제 저장 진행
+                const saveRes = await fetch('/register-google-calendar/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(schedules)
+                });
+                if (!saveRes.ok) throw new Error(`Error: ${saveRes.statusText}`);
+
+                const saveResult = await saveRes.json();
+                alert('일정이 구글 캘린더에 저장되었습니다! 등록된 이벤트 ID:\n' + JSON.stringify(saveResult.created_event_ids, null, 2));
+
+                // 저장 후 출력 결과창 초기화
+                document.getElementById('output-schedule').textContent = '';
+
             } catch (err) {
                 alert('일정 저장 실패: ' + err.message);
             }
