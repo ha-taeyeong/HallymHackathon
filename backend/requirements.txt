@@ -3,8 +3,9 @@ uvicorn==0.35.0
 numpy==1.24.3
 pydantic==2.11.7
 requests>=2.28.0
-spacy==3.7.5
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
 python-dotenv
+stanza
+dateparser
