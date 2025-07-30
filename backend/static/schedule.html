@@ -72,6 +72,7 @@
 
         async function extractSchedule() {
             const text = document.getElementById('input-schedule').value.trim();
+            console.log("[입력 일괄 텍스트]", text);
             if (!text) {
                 alert('일정을 입력해주세요.');
                 return;
@@ -86,6 +87,7 @@
                 if (!res.ok) throw new Error(`Error: ${res.statusText}`);
 
                 const data = await res.json();
+                console.log("[서버로부터 받은 추출 결과]", data.schedules);
                 const schedules = data.schedules;
                 extractedSchedules = schedules;
 
@@ -97,7 +99,7 @@
                     return;
                 }
 
-                schedules.forEach(item => {
+                schedules.forEach((item, idx) => {
                     let timeText = '';
                     if (item.time) {
                         if (typeof item.time === 'string') {
@@ -110,14 +112,14 @@
                             }
                         }
                     }
-                    const location = item.location || '-';
-                    const event = item.event || '-';
+                    const location = item.location || '';
+                    const event = item.event || '';
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td>${timeText}</td>
-                        <td>${location}</td>
-                        <td>${event}</td>
+                        <td><input type="text" value="${timeText}" data-idx="${idx}" class="time-input"/></td>
+                        <td><input type="text" value="${location}" data-idx="${idx}" class="location-input"/></td>
+                        <td><input type="text" value="${event}" data-idx="${idx}" class="event-input"/></td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -131,10 +133,21 @@
                 alert('먼저 일정을 추출해주세요.');
                 return;
             }
+            
+            // 수정된 값 반영 (변환 없이 그대로)
+            const rows = document.querySelectorAll('#output-schedule tbody tr');
+            rows.forEach((row, idx) => {
+                extractedSchedules[idx] = {
+                    time: { value: row.querySelector('.time-input').value.trim() },
+                    location: row.querySelector('.location-input').value.trim(),
+                    event: row.querySelector('.event-input').value.trim(),
+                };
+            });
+            console.log("[저장 전 최종 스케줄 데이터]", extractedSchedules);
 
             try {
-                // 1) 중복 일정 확인
-                const checkRes = await fetch('/check-duplicates/', {
+                // 1) 중복 일정 확인 (API 경로 정확히 맞춰서 사용)
+                const checkRes = await fetch('/check_duplicates/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(extractedSchedules)
@@ -144,9 +157,9 @@
                 const checkData = await checkRes.json();
 
                 if (checkData.has_duplicates) {
-                    const dupInfo = checkData.duplicates.map(d => {
-                        return `기존 일정: ${d.existing_event.summary} @ ${d.existing_event.location} (${d.existing_event.start.dateTime || d.existing_event.start.date})`;
-                    }).join('\n');
+                    const dupInfo = checkData.duplicates.map(d => 
+                        `기존 일정: ${d.existing_event.summary} @ ${d.existing_event.location} (${d.existing_event.start.dateTime || d.existing_event.start.date})`
+                    ).join('\n');
 
                     const overwrite = confirm(`중복된 일정이 존재합니다:\n${dupInfo}\n\n덮어쓰시겠습니까?`);
                     if (!overwrite) {
@@ -169,11 +182,12 @@
                 // 결과 초기화
                 document.querySelector('#output-schedule tbody').innerHTML = '';
                 extractedSchedules = [];
-
             } catch (err) {
                 alert('일정 저장 실패: ' + err.message);
             }
         }
+
+        
     </script>
 </body>
 </html>

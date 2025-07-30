@@ -1,16 +1,26 @@
+# main.py
+import os
+import stanza
+import requests
+import traceback
+import datetime
+import re
+from zoneinfo import ZoneInfo
+import dateparser
+
+from typing import List, Optional
+from dotenv import load_dotenv
+from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from googleapiclient.discovery import build
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel
-from typing import List, Optional
-import traceback
-import os
-from dotenv import load_dotenv
-import stanza
+from fastapi.responses import RedirectResponse
 from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, RedirectResponse
+
 
 # 사용자 정의 모듈 (장소 추출 등)
 from parser import extract_locations, location_keywords_extended
@@ -99,6 +109,44 @@ def home():
             return HTMLResponse(f.read())
     except Exception as e:
         return HTMLResponse(f"<h2>홈 페이지 로딩 실패: {e}</h2>")
+    
+@app.get("/login")
+def login():
+    # Google OAuth 인증 URL 생성
+    params = {
+        "client_id": CLIENT_ID,
+        "redirect_uri": CLIENT_REDIRECT_URI,
+        "response_type": "code",
+        "scope": "https://www.googleapis.com/auth/calendar",
+        "access_type": "offline",
+        "prompt": "consent"
+    }
+    url = "https://accounts.google.com/o/oauth2/v2/auth"
+    req_url = requests.Request('GET', url, params=params).prepare().url
+    return RedirectResponse(req_url)
+
+
+@app.get("/auth/callback")
+def auth_callback(code: str):
+    # 받은 Authorization code로 Access Token 요청
+    token_url = "https://oauth2.googleapis.com/token"
+    data = {
+        "code": code,
+        "client_id": CLIENT_ID,
+        "client_secret": CLIENT_SECRET,
+        "redirect_uri": CLIENT_REDIRECT_URI,
+        "grant_type": "authorization_code"
+    }
+    response = requests.post(token_url, data=data)
+    token_data = response.json()
+    if "access_token" in token_data:
+        # user_key = 'default' 로 저장
+        user_tokens['default'] = token_data
+        # 인증 성공 후 /schedule 페이지로 리다이렉트
+        return RedirectResponse(url="/schedule")
+    else:
+        raise HTTPException(status_code=400, detail="토큰 요청 실패")
+
 
 @app.get("/schedule")
 def schedule():
@@ -109,12 +157,28 @@ def schedule():
     except Exception as e:
         return HTMLResponse(f"<h2>일정 페이지 로딩 실패: {e}</h2>")
 
+
+# 이벤트 키워드를 JSON 파일에서 불러와 전역 변수로 저장
+def load_event_keywords(filepath="event_keywords.json"):
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            keywords = json.load(f)
+            if isinstance(keywords, list):
+                return keywords
+    except Exception:
+        pass
+    return []
+
+event_keywords = load_event_keywords()
+
+
 @app.post("/parse-multi-schedule/")
 def parse_multi_schedule(req: TextRequest):
     """
     클라이언트가 입력한 여러 일정 문장(콤마 구분)을 
     시간, 장소, 이벤트로 분리하여 반환하는 API.
     """
+    print("== [입력 데이터] parse-multi-schedule ==\n", req.text)
     if not req.text or not isinstance(req.text, str):
         raise HTTPException(status_code=400, detail="텍스트 입력 필드가 필요합니다.")
 
@@ -122,8 +186,9 @@ def parse_multi_schedule(req: TextRequest):
     schedules = []
 
     for part in parts:
-        # 1. 기본 규칙으로 시간, 장소, 이벤트 분리
+        # 1. 기본 규칙으로 시간, 장소, 이벤트 분리print("---- [개별 일정 원본] ----", part)
         time_part, location_part, event_part = split_schedule_parts(part)
+        print(f"시간: {time_part}, 장소: {location_part}, 이벤트: {event_part}")
 
         # 2. 시간 필드 생성
         time = {"value": time_part} if time_part else None
@@ -186,6 +251,7 @@ def get_authenticated_service(user_key: str = "default"):
 
 @app.post("/check_duplicates/")
 def check_duplicates(items: List[ScheduleItem], user_key: str = "default"):
+    print("[DEBUG] check_duplicates items:", items)
     """
     전달받은 일정 리스트에 대해 Google Calendar 내 겹치는 일정이 있는지 확인.
     """
@@ -199,28 +265,13 @@ def check_duplicates(items: List[ScheduleItem], user_key: str = "default"):
 
     duplicates = []
 
-    for schedule in items:
+    for i, schedule in enumerate(items):
+        print(f"[{i}] 저장 대상 스케줄:", schedule)
         if schedule.time and schedule.time.get("value"):
             time_obj = schedule.time
-            iso_value = None
-
-            if isinstance(time_obj, dict):
-                value_obj = time_obj.get("value")
-                if isinstance(value_obj, dict):
-                    iso_value = value_obj.get("value")
-                elif isinstance(value_obj, str):
-                    iso_value = value_obj
-            elif isinstance(time_obj, str):
-                iso_value = time_obj
-
-            if not iso_value:
-                continue
-
-            dt = datetime.datetime.fromisoformat(iso_value)
-            if dt.tzinfo is None:
-                dt = dt.replace(tzinfo=ZoneInfo("Asia/Seoul"))
-            else:
-                dt = dt.astimezone(ZoneInfo("Asia/Seoul"))
+            dt = safe_parse_datetime(time_obj)
+            if not dt:
+                continue  # 잘못된 시간 입력은 건너뜀
 
             start_dt = dt
             end_dt = start_dt + datetime.timedelta(hours=1)
@@ -244,8 +295,7 @@ def check_duplicates(items: List[ScheduleItem], user_key: str = "default"):
                     },
                     "existing_event": ev
                 })
-                break
-
+                break  # 한 건만 확인하고 break
     return {
         "has_duplicates": len(duplicates) > 0,
         "duplicates": duplicates
@@ -253,83 +303,176 @@ def check_duplicates(items: List[ScheduleItem], user_key: str = "default"):
 
 @app.post("/register-google-calendar/")
 def register_google_calendar(items: List[ScheduleItem], user_key: str = "default"):
-    """
-    일정 리스트를 받아 Google Calendar에 등록(중복 시 업데이트).
-    """
     import datetime
     from zoneinfo import ZoneInfo
+    import traceback
 
-    print("[DEBUG] 받은 items:", items)
+    print("== [저장 요청] 받은 items ==", items)
 
     created_ids = []
+    failed_items = []
 
     try:
         service = get_authenticated_service(user_key)
     except HTTPException as e:
         raise e
 
-    for schedule in items:
-        if schedule.time and schedule.time.get("value"):
-            try:
-                time_obj = schedule.time
-                iso_value = None
+    for i, schedule in enumerate(items):
+        print(f"[{i}] 저장 대상 스케줄:", schedule)
+        try:
+            dt = safe_parse_datetime(schedule.time)
+            print(f"  변환된 dt: {dt}")
+            if not dt:
+                print(f"[{i}] 실패: 시간 파싱 안됨, 일정 건너뜀")
+                continue
 
-                if isinstance(time_obj, dict):
-                    value_obj = time_obj.get("value")
-                    if isinstance(value_obj, dict):
-                        iso_value = value_obj.get("value")
-                    elif isinstance(value_obj, str):
-                        iso_value = value_obj
+            start_dt = dt
+            end_dt = start_dt + datetime.timedelta(hours=1)
 
-                if not iso_value:
-                    continue
+            # 중복 검사 및 event 생성/수정
+            existing_events_result = service.events().list(
+                calendarId="primary",
+                timeMin=start_dt.isoformat(),
+                timeMax=end_dt.isoformat(),
+                singleEvents=True,
+                orderBy="startTime"
+            ).execute()
 
-                dt = datetime.datetime.fromisoformat(iso_value)
-                if dt.tzinfo is None:
-                    dt = dt.replace(tzinfo=ZoneInfo("Asia/Seoul"))
-                else:
-                    dt = dt.astimezone(ZoneInfo("Asia/Seoul"))
+            existing_events = existing_events_result.get("items", [])
+            duplicate_event_id = None
+            for ev in existing_events:
+                duplicate_event_id = ev["id"]
+                break
 
-                start_dt = dt
-                end_dt = start_dt + datetime.timedelta(hours=1)
+            event_body = {
+                "summary": schedule.event or "일정",
+                "location": schedule.location or "",
+                "start": {"dateTime": start_dt.isoformat(), "timeZone": "Asia/Seoul"},
+                "end": {"dateTime": end_dt.isoformat(), "timeZone": "Asia/Seoul"},
+            }
 
-                existing_events_result = service.events().list(
+            if duplicate_event_id:
+                event = service.events().update(
                     calendarId="primary",
-                    timeMin=start_dt.isoformat(),
-                    timeMax=end_dt.isoformat(),
-                    singleEvents=True,
-                    orderBy="startTime"
+                    eventId=duplicate_event_id,
+                    body=event_body
+                ).execute()
+            else:
+                event = service.events().insert(
+                    calendarId="primary",
+                    body=event_body
                 ).execute()
 
-                existing_events = existing_events_result.get("items", [])
-                duplicate_event_id = None
-                for ev in existing_events:
-                    duplicate_event_id = ev["id"]
-                    break
+            created_ids.append(event.get("id"))
+            print(f"[{i}] 일정 저장 완료: {event.get('id')}")
+        except Exception as e:
+            failed_items.append({"schedule": schedule, "error": str(e)})
+            continue
 
-                event_body = {
-                    "summary": schedule.event or "일정",
-                    "location": schedule.location or "",
-                    "start": {"dateTime": start_dt.isoformat(), "timeZone": "Asia/Seoul"},
-                    "end": {"dateTime": end_dt.isoformat(), "timeZone": "Asia/Seoul"},
-                }
+    return {"created_event_ids": created_ids, "failed_items": failed_items}
 
-                if duplicate_event_id:
-                    event = service.events().update(
-                        calendarId="primary",
-                        eventId=duplicate_event_id,
-                        body=event_body
-                    ).execute()
-                else:
-                    event = service.events().insert(
-                        calendarId="primary",
-                        body=event_body
-                    ).execute()
 
-                created_ids.append(event.get("id"))
-            except Exception:
-                traceback.print_exc()
-    return {"created_event_ids": created_ids}
+
+def safe_parse_datetime(time_obj):
+
+    now = datetime.datetime.now()
+    
+    # 1. 시간 문자열 추출------------------------------
+    iso_value = None
+    if isinstance(time_obj, dict):
+        val = time_obj.get("value")
+        if isinstance(val, dict):
+            iso_value = val.get("value")
+        elif isinstance(val, str):
+            iso_value = val
+    elif isinstance(time_obj, str):
+        iso_value = time_obj
+
+    if not iso_value:  # 시간 문자열 없으면 None 반환
+        return None
+
+    # 2. 전처리 함수 정의 (필요시 함수 밖에 미리 정의해도 무방)
+    def replace_relative_dates(text):
+        weekdays = {
+            "월요일": 0, "화요일": 1, "수요일": 2,
+            "목요일": 3, "금요일": 4, "토요일": 5, "일요일": 6,
+        }
+        text = re.sub(r'오늘', now.strftime("%Y년 %m월 %d일"), text)
+        text = re.sub(r'내일', (now + datetime.timedelta(days=1)).strftime("%Y년 %m월 %d일"), text)
+        text = re.sub(r'모레', (now + datetime.timedelta(days=2)).strftime("%Y년 %m월 %d일"), text)
+
+        match = re.search(r'다음주\s*(월요일|화요일|수요일|목요일|금요일|토요일|일요일)', text)
+        if match:
+            target_wd = weekdays[match.group(1)]
+            today_wd = now.weekday()
+            days_until_target = (target_wd - today_wd) % 7 + 7
+            target_date = now + datetime.timedelta(days=days_until_target)
+            target_str = target_date.strftime("%Y년 %m월 %d일")
+            text = re.sub(r'다음주\s*(월요일|화요일|수요일|목요일|금요일|토요일|일요일)', target_str, text)
+        return text
+
+    def ensure_year_prefix(time_str):
+        if re.search(r'\b\d{4}년\b', time_str) or re.search(r'\b\d{4}[-/]', time_str):
+            return time_str.strip()
+        else:
+            return f"{now.year}년 {time_str.strip()}"
+
+    def convert_am_pm(time_str):
+        def conv(m):
+            ampm, hour = m.group(1), int(m.group(2))
+            if ampm == "오후" and hour < 12:
+                hour += 12
+            elif ampm == "오전" and hour == 12:
+                hour = 0
+            return f"{hour:02d}:00"
+        return re.sub(r'(오전|오후)\s*(\d{1,2})시', conv, time_str)
+
+    def clean_date_format(time_str):
+        # 1) 여러 공백 → 1개의 공백, 앞뒤 공백 제거
+        time_str = re.sub(r'\s+', ' ', time_str).strip()
+
+        # 2) '년', '월' 문자는 하이픈으로 교체
+        time_str = re.sub(r'(\d{4})년', r'\1-', time_str)
+        time_str = re.sub(r'(\d{1,2})월', r'\1-', time_str)
+
+        # 3) ‘일’ 문자와 주변 공백 제거 (예: '29일' → '29 ' or '29'로 분리)
+        time_str = re.sub(r'\s*(\d{1,2})일\s*', r'\1 ', time_str)
+
+        # 4) 중복 하이픈 '--' → '-' 하나로 치환
+        time_str = re.sub(r'-{2,}', '-', time_str)
+
+        # 5) 양쪽 끝 불필요한 하이픈 및 공백 제거
+        time_str = time_str.strip('- ')
+
+        return time_str
+
+
+    # 3. 전처리 함수 순서대로 실행
+    iso_value = replace_relative_dates(iso_value)
+    iso_value = ensure_year_prefix(iso_value)
+    iso_value = convert_am_pm(iso_value)
+    iso_value = clean_date_format(iso_value)
+
+    # 4. 파싱 시도
+    parsed = dateparser.parse(
+        iso_value,
+        languages=['ko'],
+        settings={'RELATIVE_BASE': now, 'PREFER_DATES_FROM': 'future'}
+    )
+
+    if not parsed:
+        print("[WARN] dateparser 파싱 실패 even after preprocess:", iso_value)
+        return None
+
+    dt = parsed
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=ZoneInfo("Asia/Seoul"))
+    else:
+        dt = dt.astimezone(ZoneInfo("Asia/Seoul"))
+    return dt
+
+
+# 그리고 이 함수로 기존 코드에서 시간 변환 부분을 대체
 
 # --------------------
 # 장소 후보 판단용 헬퍼
