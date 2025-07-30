@@ -1,6 +1,17 @@
-import React from "react";
+import React,{useEffect} from "react";
 
 const MainPage = () => {
+useEffect(() => {
+  if (window.location.hash) {
+    const id = window.location.hash.replace("#", "");
+    const el = document.getElementById(id);
+    if (el) {
+      setTimeout(() => {
+        el.scrollIntoView({ behavior: "smooth" });
+      }, 300); // 50ms가 너무 짧을 수 있음
+    }
+  }
+}, []);
   return (
     <div
       className="bg-white flex flex-row justify-center w-full"
@@ -9,21 +20,49 @@ const MainPage = () => {
       <div className="bg-white w-[1440px] h-[3603px] relative">
         <div className="absolute w-[1440px] h-[164px] top-0 left-0 bg-white overflow-hidden">
           <div className="inline-flex items-center justify-end gap-[var(--variable-collection-spacing-m)] absolute top-14 left-[922px]">
-            <div className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)]">
+            <div
+              className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)] cursor-pointer"
+              onClick={() => {
+                const aboutSection = document.getElementById("about-us");
+                if (aboutSection) {
+                  aboutSection.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+            >
               About
             </div>
 
-            <div className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)]">
+              <div
+                className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)] cursor-pointer"
+                onClick={() => {
+                  const skillsSection = document.getElementById("skills-section");
+                  if (skillsSection) {
+                  skillsSection.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+            >
               Skills
             </div>
 
-            <div className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)]">
-              Memo
-            </div>
+            <div
+            className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)] cursor-pointer"
+            onClick={() => window.location.href = 'http://localhost:5173/memo'}
+            >
+            Memo
+          </div>
 
-            <div className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)]">
-              Contact
-            </div>
+
+            <div
+            className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)] cursor-pointer"
+            onClick={() => {
+              const contactSection = document.getElementById("contact-section");
+              if (contactSection) {
+                contactSection.scrollIntoView({ behavior: "smooth" });
+              }
+            }}
+          >
+            Contact
+          </div>
 
             <div className="relative w-px h-[52px] bg-white rounded-lg shadow-button-shadow" />
           </div>
@@ -47,7 +86,9 @@ const MainPage = () => {
           src="https://c.animaapp.com/kPFgkC5m/img/image-4.png"
         />
 
-        <div className="absolute w-[624px] top-[1436px] left-[79px] [font-family:'Inter',Helvetica] font-semibold text-black text-5xl tracking-[-0.96px] leading-[normal]">
+        <div
+        id="about-us" 
+        className="absolute w-[624px] top-[1436px] left-[79px] [font-family:'Inter',Helvetica] font-semibold text-black text-5xl tracking-[-0.96px] leading-[normal]">
           About us
         </div>
 
@@ -93,7 +134,9 @@ const MainPage = () => {
           <div className="relative w-[381px] h-9" />
         </div>
 
-        <div className="absolute w-[624px] top-[3246px] left-[91px] [font-family:'Inter',Helvetica] font-semibold text-black text-5xl tracking-[-0.96px] leading-[normal]">
+        <div 
+        id="contact-section"
+        className="absolute w-[624px] top-[3246px] left-[91px] [font-family:'Inter',Helvetica] font-semibold text-black text-5xl tracking-[-0.96px] leading-[normal]">
           Contact
         </div>
 
@@ -125,7 +168,10 @@ const MainPage = () => {
             </p>
           </div>
 
-          <div className="flex w-[133px] h-14 items-center gap-2 px-8 py-5 relative bg-black rounded-lg shadow-button-shadow">
+          <div
+            className="flex w-[133px] h-14 items-center gap-2 px-8 py-5 relative bg-black rounded-lg shadow-button-shadow cursor-pointer"
+            onClick={() => window.location.href = 'http://localhost:5173/memo'}
+          >
             <div className="relative w-[68.25px] h-[17.72px] mt-[-0.86px] mb-[-0.86px]">
               <img
                 className="absolute w-3 h-3.5 top-1 left-14"
@@ -155,7 +201,9 @@ const MainPage = () => {
         </div>
 
         <div className="absolute w-[1070px] h-[607px] top-[2382px] left-[79px]">
-          <div className="absolute w-[624px] top-0 left-[7px] [font-family:'Inter',Helvetica] font-semibold text-black text-5xl tracking-[-0.96px] leading-[normal]">
+          <div 
+            id="skills-section"
+            className="absolute w-[624px] top-0 left-[7px] [font-family:'Inter',Helvetica] font-semibold text-black text-5xl tracking-[-0.96px] leading-[normal]">
             Skills
           </div>
 
