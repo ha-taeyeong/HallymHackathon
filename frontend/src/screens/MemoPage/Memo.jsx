@@ -1,5 +1,7 @@
 import React from "react";
+import { HashLink } from 'react-router-hash-link';
 import { Rectangle } from "../../components/Rectangle";
+
 
 const Memo = () => {
   return (
@@ -36,13 +38,22 @@ const Memo = () => {
 
             <div className="bg-white absolute w-[1440px] h-[164px] top-0 left-0">
               <div className="left-[935px] inline-flex items-center justify-end gap-[var(--variable-collection-spacing-m)] absolute top-14">
-                <div className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)]">
-                  About
-                </div>
+             <HashLink
+                to="/#about-us"
+                smooth
+                className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)] cursor-pointer"
+              >
+                About
+              </HashLink>
 
-                <div className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)]">
-                  Skills
-                </div>
+
+              <HashLink
+                to="/#skills-section"
+                smooth
+                className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)] cursor-pointer"
+              >
+                Skills
+              </HashLink>
 
                 <button className="all-[unset] box-border justify-center px-6 py-3.5 relative flex-[0_0_auto] bg-black inline-flex items-center gap-2 rounded-lg shadow-button-shadow">
                   <div className="relative w-fit mt-[-1.00px] font-[number:var(--small-text-font-weight)] text-white text-[length:var(--small-text-font-size)] leading-[var(--small-text-line-height)] whitespace-nowrap font-small-text tracking-[var(--small-text-letter-spacing)] [font-style:var(--small-text-font-style)]">
@@ -50,10 +61,14 @@ const Memo = () => {
                   </div>
                 </button>
 
-                <div className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)]">
-                  Contact
+               <HashLink
+                to="/#contact-section"
+                smooth
+                className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)] cursor-pointer"
+                >
+                Contact
+              </HashLink>
                 </div>
-              </div>
 
               <img
                 className="absolute w-[184px] h-[88px] top-[38px] left-[59px] object-cover"
