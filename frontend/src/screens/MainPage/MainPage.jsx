@@ -1,4 +1,5 @@
 import React,{useEffect} from "react";
+import NavBar from "../../components/NavBar";
 
 const MainPage = () => {
 useEffect(() => {
@@ -15,70 +16,12 @@ useEffect(() => {
   return (
     <div
       className="bg-white flex flex-row justify-center w-full"
-      data-model-id="1:902"
-    >
-      <div className="bg-white w-[1440px] h-[3603px] relative">
-        <div className="absolute w-[1440px] h-[164px] top-0 left-0 bg-white overflow-hidden">
-          <div className="inline-flex items-center justify-end gap-[var(--variable-collection-spacing-m)] absolute top-14 left-[922px]">
-            <div
-              className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)] cursor-pointer"
-              onClick={() => {
-                const aboutSection = document.getElementById("about-us");
-                if (aboutSection) {
-                  aboutSection.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
-            >
-              About
-            </div>
-
-              <div
-                className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)] cursor-pointer"
-                onClick={() => {
-                  const skillsSection = document.getElementById("skills-section");
-                  if (skillsSection) {
-                  skillsSection.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
-            >
-              Skills
-            </div>
-
-            <div
-            className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)] cursor-pointer"
-            onClick={() => window.location.href = 'http://localhost:5173/memo'}
-            >
-            Memo
-          </div>
-
-
-            <div
-            className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)] cursor-pointer"
-            onClick={() => {
-              const contactSection = document.getElementById("contact-section");
-              if (contactSection) {
-                contactSection.scrollIntoView({ behavior: "smooth" });
-              }
-            }}
-          >
-            Contact
-          </div>
-
-            <div className="relative w-px h-[52px] bg-white rounded-lg shadow-button-shadow" />
-          </div>
-
-          <img
-            className="absolute w-[200px] h-20 top-[286px] left-[4867px]"
-            alt="Rectangle"
-            src="/img/rectangle-3.svg"
-          />
-
-          <img
-            className="w-[184px] h-[88px] top-[38px] left-[86px] absolute object-cover"
-            alt="Image"
-            src="https://c.animaapp.com/kPFgkC5m/img/image-21@2x.png"
-          />
-        </div>
+      data-model-id="1:902">
+         <NavBar /> 
+      <div className="bg-white w-[1440px] h-[3603px] relative"
+      style={{ paddingTop: "164px" }}
+      >
+       
 
         <img
           className="w-[1269px] h-[715px] top-[594px] left-[69px] absolute object-cover"
