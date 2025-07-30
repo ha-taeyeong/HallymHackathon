@@ -2,114 +2,323 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
-    <title>일정 등록 및 추출</title>
+    <title>일정 등록 및 확인</title>
     <style>
+        html, body {
+            margin: 0; padding: 0;
+            min-height: 100vh;
+            background: #fafafb;
+            font-family: 'Pretendard', 'Inter', Arial, sans-serif;
+        }
         body {
-            max-width: 800px;
-            margin: 20px auto;
-            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: #fff;
+            border-radius: 32px;
+            box-shadow: 0 4px 32px 0 #cacaca14, 0 2px 12px #eaeaea;
+            padding: 48px 42px 38px 42px;
+            max-width: 540px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h2 {
+            font-size: 2.1rem;
+            font-weight: 900;
+            margin-bottom: 18px;
+            letter-spacing: -1px;
+            text-align: center;
+        }
+        label {
+            font-size: 1.08rem;
+            color: #555;
+            font-weight: 700;
+            margin-bottom: 7px;
+            text-align: left;
+            width: 100%;
+            display: block;
         }
         textarea {
             width: 100%;
-            font-size: 16px;
+            min-height: 100px;
+            font-size: 1.06rem;
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            padding: 13px;
+            background: #f7f7fa;
+            margin-bottom: 18px;
+            box-sizing: border-box;
             resize: vertical;
-            margin-bottom: 10px;
-            padding: 8px;
+            color: #232329;
         }
-        button {
-            padding: 12px 20px;
-            font-size: 16px;
+        .action-row {
+            width: 100%;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .btn-main {
+            flex: 1;
+            background: #18181b;
+            color: #fff;
+            padding: 14px 0;
+            border-radius: 10px;
+            border: none;
+            font-size: 1.11rem;
+            font-weight: 600;
             cursor: pointer;
-            margin-right: 10px;
+            transition: background 0.18s;
+            box-shadow: 0 2px 12px #62626219;
+            letter-spacing: 0.4px;
         }
-        pre {
-            background-color: #eee;
-            border: 1px solid #ccc;
-            padding: 12px;
-            max-height: 300px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-break: break-word;
+        .btn-main:hover {
+            background: #232328;
+        }
+        h3 {
+            text-align: left;
+            font-weight: 700;
+            margin: 34px 0 9px 0;
+            font-size: 1.18rem;
+        }
+        #output-schedule-container {
+            width: 100%;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            max-width: 800px;
-            margin-top: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fafbfc;
+            box-shadow: 0 2px 8px #ececec1a;
         }
         th, td {
-            border: 1px solid #ccc;
-            padding: 6px 10px;
+            border: 1px solid #ededed;
+            padding: 13px 10px;
             text-align: left;
         }
-        input[type=text] {
-            width: 95%;
-            font-size: 15px;
-            padding: 4px 6px;
+        th {
+            background: #f5f5f7;
+            font-weight: 600;
+            color: #32323c;
+            font-size: 1.05rem;
         }
+        td {
+            background: #fff;
+        }
+        input[type="text"] {
+            width: 93%;
+            font-size: 1rem;
+            padding: 7px 8px;
+            border-radius: 5px;
+            border: 1px solid #e1e1e5;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 22px 8px 22px 8px;
+                min-width: unset;
+            }
+            h2 { font-size: 1.2rem; }
+        }
+
+        /* 모달 스타일 시작 */
+        .modal-overlay {
+            position: fixed;
+            left: 0; top: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(41,42,43, 0.42);
+            backdrop-filter: blur(2px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 32px #cacaca18, 0 2px 12px #eaeaea;
+            padding: 40px 32px 30px 32px;
+            min-width: 330px;
+            max-width: 90vw;
+            text-align: center;
+            animation: popup 0.28s cubic-bezier(.17,.67,.83,1.39);
+        }
+        @keyframes popup {
+            0% { transform: scale(0.85); opacity: 0;}
+            100% { transform: scale(1); opacity: 1;}
+        }
+        .modal-box h3 {
+            margin: 0 0 18px 0;
+            font-size: 1.22rem;
+            font-weight: 800;
+            color: #222;
+            letter-spacing: -1px;
+        }
+        .modal-box p {
+            color: #444c54;
+            margin: 0 0 22px 0;
+            font-size: 1.03rem;
+            line-height: 1.6;
+        }
+        .modal-box button {
+            background: #18181b;
+            color: #fff;
+            font-size: 1.11rem;
+            font-weight: 700;
+            border-radius: 11px;
+            padding: 13px 44px;
+            border: none;
+            box-shadow: 0 2px 12px #62626219;
+            cursor: pointer;
+            transition: background 0.13s;
+            outline: none;
+        }
+        .modal-box button:hover {
+            background:#28282f;
+        }
+        /* 모달 스타일 끝 */
+
+        #loading-spinner {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 5px solid #d1d5db; /* 연한 회색 */
+            border-top: 5px solid #18181b; /* 검은색 */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg);}
+            100% { transform: rotate(360deg);}
+        }
+
     </style>
 </head>
 <body>
-    <h2>일정 자동 등록</h2>
-
-    <label for="input-schedule">일정 텍스트 입력</label><br>
-    <textarea id="input-schedule" rows="5" placeholder="예: 8월 1일 오후 3시 강남역 카페 미팅"></textarea><br>
-
-    <button onclick="extractSchedule()">일정 추출</button>
-    <button onclick="saveSchedule()">구글 캘린더에 저장</button>
-
-    <h3>추출 결과</h3>
-    <div id="output-schedule-container">
-        <table id="output-schedule" border="1" cellpadding="5" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>시간</th>
-                    <th>장소</th>
-                    <th>이벤트</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+    <div class="container">
+        <a href="http://3.106.252.194:8000/" style="display:block;width:100%;">
+            <img
+            src="static/planup_logo.png"
+            alt="Plan Up 로고"
+            style="display: block; margin: 14px auto 16px auto; height: 95px; max-width: 75%;"
+            >
+        </a>
+        <label for="input-schedule" style="margin-top: 0; margin-bottom: 7px;">
+            <strong>일정 또는 약속을 자유롭게 입력해 주세요.</strong>
+        </label>
+        <textarea id="input-schedule" rows="5" placeholder="예: 8월 1일 오후 3시 강남역 카페에서 미팅"></textarea>
+        <div class="action-row">
+            <button class="btn-main" onclick="extractSchedule()">추출하기</button>
+            <button class="btn-main" onclick="saveSchedule()">캘린더에 등록하기</button>
+        </div>
+        <h3>등록 예정인 일정 목록</h3>
+        <div id="output-schedule-container">
+            <table id="output-schedule" border="1" cellpadding="5" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>시간</th>
+                        <th>장소</th>
+                        <th>이벤트</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 
+    <!-- 모달 알림창 HTML -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box">
+            <h3 id="modalTitle">알림</h3>
+            <p id="modalMessage">기본 메시지</p>
+            <button onclick="closeModal()" autofocus>확인</button>
+        </div>
+    </div>
+
+    <!-- 중복 안내/확인용 모달 -->
+    <div class="modal-overlay" id="confirmModal" style="display:none;">
+        <div class="modal-box">
+            <h3 id="confirmTitle">알림</h3>
+            <p id="confirmMessage"></p>
+            <div style="margin-top:18px;">
+            <button id="confirmOk" class="btn-main" style="width:45%;margin-right:10px;">덮어쓰기</button>
+            <button id="confirmCancel" class="btn-main" style="background:#e5e5e7;color:#222;width:45%;">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 로딩 스피너 (기본 숨김) -->
+    <div id="loading-spinner" style="display:none;">
+    <div class="spinner"></div>
+    </div>
     <script>
-        // 추출된 일정을 저장하는 전역 배열
+        // 모달 열기 함수
+        function openModal(title, message) {
+            const modal = document.getElementById('modalOverlay');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+
+            if (modalTitle) modalTitle.textContent = title || '알림';
+            if (modalMessage) modalMessage.innerHTML = message || '';
+
+            if (modal) modal.style.display = 'flex';
+        }
+
+        // 모달 닫기 함수
+        function closeModal() {
+            const modal = document.getElementById('modalOverlay');
+            if (modal) modal.style.display = 'none';
+        }
+
+        // 기존 JS 코드 수정 적용
+
         let extractedSchedules = [];
 
-        /**
-         *  일정 텍스트를 서버에 전송하여 파싱 결과(시간, 장소, 이벤트)를 받아 표시
-         */
         async function extractSchedule() {
             const text = document.getElementById('input-schedule').value.trim();
-
             if (!text) {
-                alert('일정을 입력해주세요.');
+                openModal('입력 오류', '일정을 입력해주세요.');
                 return;
             }
-
             try {
+                showLoading();  // 로딩 시작
+
                 const res = await fetch('/parse-multi-schedule/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ text })
                 });
 
+                hideLoading();  // 로딩 끝
+
                 if (!res.ok) throw new Error(`Error: ${res.statusText}`);
 
                 const data = await res.json();
-
                 extractedSchedules = data.schedules;
-
-                // 결과 테이블 tbody 선택 및 초기화
                 const tbody = document.querySelector('#output-schedule tbody');
                 tbody.innerHTML = '';
-
                 if (!extractedSchedules || extractedSchedules.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">일정이 없습니다.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">등록할 일정이 아직 없습니다.</td></tr>';
                     return;
                 }
-
-                // 각 일정 항목을 행(tr)과 입력칸으로 생성
                 extractedSchedules.forEach((item, idx) => {
                     let timeText = '';
                     if (item.time) {
@@ -136,21 +345,18 @@
                 });
 
             } catch (err) {
-                alert('일정 추출에 실패했습니다: ' + err.message);
+                hideLoading();  // 실패 시에도 로딩 끝내기
                 console.error(err);
+                openModal('일정 추출 실패', `일정 추출에 실패했습니다:<br><strong>${err.message}</strong>`);
             }
         }
 
-        /**
-         *  추출된 일정을 사용자 수정 후, 중복 확인 -> 구글 캘린더 저장 처리
-         */
+
         async function saveSchedule() {
             if (!extractedSchedules || extractedSchedules.length === 0) {
-                alert('먼저 일정을 추출해주세요.');
+                openModal('알림', '먼저 일정을 확인해 주세요.');
                 return;
             }
-
-            // 테이블 내 입력값에서 수정된 일정 정보 반영
             const rows = document.querySelectorAll('#output-schedule tbody tr');
             rows.forEach((row, idx) => {
                 extractedSchedules[idx] = {
@@ -159,53 +365,119 @@
                     event: row.querySelector('.event-input').value.trim(),
                 };
             });
-
             try {
-                // 1) 중복 일정 확인 API 호출
+                showLoading();
+
                 const checkRes = await fetch('/check_duplicates/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(extractedSchedules)
                 });
-
                 if (!checkRes.ok) throw new Error(`Error: ${checkRes.statusText}`);
                 const checkData = await checkRes.json();
-
-                // 중복 건 존재 시 사용자에게 확인 요청
                 if (checkData.has_duplicates) {
-                    const dupInfo = checkData.duplicates.map(d => 
-                        `기존 일정: ${d.existing_event.summary} @ ${d.existing_event.location} (${d.existing_event.start.dateTime || d.existing_event.start.date})`
-                    ).join('\n');
+                    hideLoading();
+                    const dupInfo = checkData.duplicates.map(d =>
+                        `<li><b>${d.existing_event.summary}</b> - ${formatDateTime(d.existing_event.start)} @ ${d.existing_event.location}</li>`
+                    ).join('');
+                    const msg = `
+                        입력하신 일정이 아래와 겹쳐요.<br>
+                        <ul style="text-align:left;margin:12px 0 18px 24px;line-height:1.5;">
+                            ${dupInfo}
+                        </ul>
+                        이 일정을 <b>새로 등록/덮어쓰기</b> 하시겠습니까?
+                    `;
 
-                    const overwrite = confirm(`중복된 일정이 존재합니다:\n${dupInfo}\n\n덮어쓰시겠습니까?`);
+                    // ★ customConfirm 호출 → await 로 처리
+                    const overwrite = await customConfirm(msg, '중복 일정 알림');
                     if (!overwrite) {
-                        alert('저장이 취소되었습니다.');
+                        openModal('알림', '저장이 취소되었습니다.');
                         return;
                     }
+                    showLoading();
                 }
 
-                // 2) 중복 확인 후 등록 API 호출
                 const saveRes = await fetch('/register-google-calendar/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(extractedSchedules)
                 });
+                hideLoading();
 
                 if (!saveRes.ok) throw new Error(`Error: ${saveRes.statusText}`);
-
-                const saveResult = await saveRes.json();
-                alert('일정이 구글 캘린더에 저장되었습니다! 등록된 이벤트 ID:\n' + 
-                      JSON.stringify(saveResult.created_event_ids, null, 2));
-
-                // 결과 테이블 초기화 및 상태 초기화
+                // 성공 메시지 자연스럽게
+                openModal('일정 저장 완료', '입력하신 일정이 <b>구글 캘린더</b>에 정상적으로 등록되었습니다.<br>내 캘린더 앱에서 확인해 보세요!');
                 document.querySelector('#output-schedule tbody').innerHTML = '';
                 extractedSchedules = [];
-
             } catch (err) {
-                alert('일정 저장 실패: ' + err.message);
+                hideLoading();
                 console.error(err);
+                openModal('저장 실패', '일정 저장 과정에서 문제가 발생했습니다.<br>로그인 상태 또는 접근 권한을 다시 확인해 주세요.');
+
             }
         }
+
+        function showLoading() {
+            const loader = document.getElementById('loading-spinner');
+            if (loader) loader.style.display = 'flex';
+        }
+
+        function hideLoading() {
+            const loader = document.getElementById('loading-spinner');
+            if (loader) loader.style.display = 'none';
+        }
+        
+        // 커스텀 confirm: Promise를 리턴함!
+        function customConfirm(message, title) {
+            return new Promise(resolve => {
+                const modal = document.getElementById('confirmModal');
+                const titleEl = document.getElementById('confirmTitle');
+                const msgEl = document.getElementById('confirmMessage');
+                const okBtn = document.getElementById('confirmOk');
+                const cancelBtn = document.getElementById('confirmCancel');
+
+                if (titleEl) titleEl.textContent = title || '확인';
+                if (msgEl) msgEl.innerHTML = message;
+
+                modal.style.display = 'flex';
+
+                // 콜백 함수 정의
+                function cleanup(result) {
+                modal.style.display = 'none';
+                okBtn.removeEventListener('click', okHandler);
+                cancelBtn.removeEventListener('click', cancelHandler);
+                resolve(result);
+                }
+
+                function okHandler() { cleanup(true); }
+                function cancelHandler() { cleanup(false); }
+
+                // 기존 리스너 제거 후 새로 등록 (안전성 추가)
+                okBtn.removeEventListener('click', okHandler);
+                cancelBtn.removeEventListener('click', cancelHandler);
+
+                okBtn.addEventListener('click', okHandler);
+                cancelBtn.addEventListener('click', cancelHandler);
+            });
+        }
+
+        function formatDateTime(start) {
+        if (!start) return '';
+        if (start.dateTime) {
+            // ISO 8601 datetime 문자열 예: "2025-07-29T15:00:00+09:00"
+            const dateObj = new Date(start.dateTime);
+            // 예: 2025년 7월 29일 15:00
+            return `${dateObj.getFullYear()}년 ${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일 ${dateObj.getHours()}시 ${dateObj.getMinutes().toString().padStart(2, '0')}분`;
+        }
+        if (start.date) {
+            // 날짜만 있는 경우 (종일 이벤트)
+            const dateObj = new Date(start.date);
+            return `${dateObj.getFullYear()}년 ${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일`;
+        }
+            return '';
+        }
+
+
     </script>
 </body>
 </html>

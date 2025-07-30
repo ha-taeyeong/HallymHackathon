@@ -114,7 +114,7 @@ useEffect(() => {
 
           <div
             className="flex w-[133px] h-14 items-center gap-2 px-8 py-5 relative bg-black rounded-lg shadow-button-shadow cursor-pointer"
-            onClick={() => window.location.href = 'http://localhost:5173/memo'}
+            onClick={() => window.location.href = 'http://3.106.252.194:8000/'}
           >
             <div className="relative w-[68.25px] h-[17.72px] mt-[-0.86px] mb-[-0.86px]">
               <img
