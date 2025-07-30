@@ -23,14 +23,16 @@ const NavBar = () => (
       >
         Skills
       </HashLink>
-      <HashLink
-        to="/memo"
+      <a
+        href="http://3.106.252.194:8000/"
+        target="_blank"
+        rel="noopener noreferrer"
         className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)]  
           text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] 
           leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)] cursor-pointer"
       >
         Memo
-      </HashLink>
+      </a>
       <HashLink
         to="/#contact-section"
         smooth
