@@ -4,7 +4,7 @@ import { HashLink } from "react-router-hash-link";
 
 const NavBar = () => (
   <div className="fixed w-full h-[164px] top-0 left-0 bg-white z-50 shadow">
-    <div className="inline-flex items-center justify-end gap-8 absolute top-14 left-[935px]">
+    <div className="inline-flex items-center justify-end gap-8 absolute top-14 left-[1500px]">
       <HashLink
         to="/#about-us"
         smooth

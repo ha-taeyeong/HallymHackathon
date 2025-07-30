@@ -1,5 +1,6 @@
 import React,{useEffect} from "react";
 import NavBar from "../../components/NavBar";
+import myLogo from "../../images/tailwind.png"; // 실제 경로에 맞게 수정!
 
 const MainPage = () => {
 useEffect(() => {
@@ -87,10 +88,10 @@ useEffect(() => {
           <div className="flex gap-8 relative flex-1 grow flex-col items-start">
             <div className="flex flex-col w-[547.56px] items-start gap-[var(--variable-collection-spacing-XS)] relative flex-[0_0_auto]">
               <p className="relative w-[548px] mt-[-1.00px] mr-[-0.44px] [font-family:'Inter',Helvetica] font-medium text-black text-2xl tracking-[0] leading-9">
-                하태영 hateyong@gmail.com / github
+                하태영 electro0218@gmail.com 
                 <br />
                 <br />
-                이신우 steven8602@gamil.com / github
+                이신우 steven8602@naver.com
               </p>
             </div>
           </div>
@@ -146,84 +147,113 @@ useEffect(() => {
         <div className="absolute w-[1070px] h-[607px] top-[2382px] left-[79px]">
           <div 
             id="skills-section"
-            className="absolute w-[624px] top-0 left-[7px] [font-family:'Inter',Helvetica] font-semibold text-black text-5xl tracking-[-0.96px] leading-[normal]">
+            className="absolute w-[624px] top-[-100px] left-[7px] [font-family:'Inter',Helvetica] font-semibold text-black text-5xl tracking-[-0.96px] leading-[normal]">
             Skills
           </div>
 
-          <div className="absolute w-[1068px] h-[187px] top-[109px] left-0">
+          <div className="absolute w-[1068px] h-[187px] top-[30px] left-0">
             <div className="absolute w-[624px] top-0 left-1.5 [font-family:'Inter',Helvetica] font-semibold text-black text-[32px] tracking-[-0.64px] leading-[normal]">
               Frontend
             </div>
 
-            <div className="absolute w-[1066px] h-[124px] top-[63px] left-0">
+           <div className="absolute w-[852px] h-[247px] top-24 left-0">
+            <div className="absolute w-[852px] h-[233px] top-0 left-0">
               <img
                 className="w-[88px] h-[120px] top-1 left-0 absolute object-cover"
                 alt="Image"
-                src="https://c.animaapp.com/kPFgkC5m/img/image-8@2x.png"
+                src="https://c.animaapp.com/7hN6Xyu8/img/image-8@2x.png"
               />
 
               <img
-                className="w-[82px] h-[124px] top-0 left-[118px] absolute object-cover"
+                className="w-[82px] h-[124px] top-0 left-[137px] absolute object-cover"
                 alt="Image"
-                src="https://c.animaapp.com/kPFgkC5m/img/image-9@2x.png"
+                src="https://c.animaapp.com/7hN6Xyu8/img/image-9@2x.png"
               />
 
               <img
-                className="w-[175px] h-[108px] top-4 left-[234px] absolute object-cover"
+                className="w-[175px] h-[108px] top-4 left-[268px] absolute object-cover"
                 alt="Image"
-                src="https://c.animaapp.com/kPFgkC5m/img/image-10@2x.png"
+                src="https://c.animaapp.com/7hN6Xyu8/img/image-10@2x.png"
               />
 
               <img
-                className="w-[220px] h-[84px] top-4 left-[437px] absolute object-cover"
+                className="w-[220px] h-[84px] top-4 left-[498px] absolute object-cover"
                 alt="Image"
-                src="https://c.animaapp.com/kPFgkC5m/img/image-11@2x.png"
+                src="https://c.animaapp.com/7hN6Xyu8/img/image-11@2x.png"
               />
 
               <img
-                className="w-[79px] h-[103px] top-3 left-[708px] absolute object-cover"
+                className="w-[79px] h-[103px] top-2.5 left-[773px] absolute object-cover"
                 alt="Image"
-                src="https://c.animaapp.com/kPFgkC5m/img/image-12@2x.png"
+                src="https://c.animaapp.com/7hN6Xyu8/img/image-12@2x.png"
               />
 
               <img
-                className="w-[228px] h-[83px] top-[17px] left-[838px] absolute object-cover"
+                className="w-[228px] h-[83px] top-[150px] left-[295px] absolute object-cover"
                 alt="Image"
-                src="https://c.animaapp.com/kPFgkC5m/img/image-13@2x.png"
+                src="https://c.animaapp.com/7hN6Xyu8/img/image-13@2x.png"
               />
             </div>
+
+            <img
+              className="absolute w-[206px] h-[110px] top-[137px] left-[17px] object-cover"
+              alt="Tailwind"
+              src="https://c.animaapp.com/7hN6Xyu8/img/tailwind-1@2x.png"
+            />
           </div>
+        </div>
 
-          <div className="absolute w-[562px] top-[347px] left-3.5 [font-family:'Inter',Helvetica] font-semibold text-black text-[32px] tracking-[-0.64px] leading-[normal] whitespace-nowrap">
-            Backend
-          </div>
+        <div className="absolute w-[562px] top-[410px] left-[15px] [font-family:'Inter',Helvetica] font-semibold text-black text-[32px] tracking-[-0.64px] leading-[normal] whitespace-nowrap">
+          Backend
+      
+         <img
+          className="w-[287px] h-[78px] top-[114px] left-[338px] absolute object-cover"
+          alt="Image"
+          src="https://c.animaapp.com/7uX9Li8D/img/image-16@2x.png"
+        />
 
+        <div className="absolute w-[626px] h-[213px] top-[87px] left-[642px]">
           <img
-            className="w-[287px] h-[78px] top-[480px] left-[412px] absolute object-cover"
+            className="w-[344px] h-[131px] top-0 left-0 absolute object-cover"
             alt="Image"
-            src="https://c.animaapp.com/kPFgkC5m/img/image-16@2x.png"
+            src="https://c.animaapp.com/7uX9Li8D/img/image-17@2x.png"
           />
 
           <img
-            className="w-[344px] h-[131px] top-[453px] left-[715px] absolute object-cover"
-            alt="Image"
-            src="https://c.animaapp.com/kPFgkC5m/img/image-17@2x.png"
-          />
-
-          <img
-            className="w-[108px] h-[116px] top-[461px] left-[241px] absolute object-cover"
-            alt="Image"
-            src="https://c.animaapp.com/kPFgkC5m/img/image-19@2x.png"
-          />
-
-          <img
-            className="w-[177px] h-[177px] top-[430px] left-0 absolute object-cover"
-            alt="Image"
-            src="https://c.animaapp.com/kPFgkC5m/img/image-20@2x.png"
+            className="absolute w-[326px] h-52 top-[5px] left-[300px] object-cover"
+            alt="Ec"
+            src="https://c.animaapp.com/7uX9Li8D/img/ec2-1@2x.png"
           />
         </div>
-      </div>
-    </div>
+
+        <img
+          className="w-[108px] h-[116px] top-[92px] left-[196px] absolute object-cover"
+          alt="Image"
+          src="https://c.animaapp.com/7uX9Li8D/img/image-19@2x.png"
+        />
+
+        <img
+          className="w-[154px] h-[154px] top-[74px] left-0 absolute object-cover"
+          alt="Image"
+          src="https://c.animaapp.com/7uX9Li8D/img/image-20@2x.png"
+        />
+
+        <img
+          className="absolute w-[248px] h-[83px] top-[244px] left-3 object-cover"
+          alt="Dateparser"
+          src="https://c.animaapp.com/7uX9Li8D/img/dateparser-1@2x.png"
+        />
+
+        <img
+          className="absolute w-[249px] h-[85px] top-[244px] left-[304px] object-cover"
+          alt="Stanza"
+          src="https://c.animaapp.com/7uX9Li8D/img/stanza-1@2x.png"
+        />
+         </div>
+        </div>
+        </div>
+        </div>
+
   );
 };
 
