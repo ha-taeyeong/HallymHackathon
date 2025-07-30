@@ -29,7 +29,7 @@
             max-height: 300px;
             overflow-y: auto;
             white-space: pre-wrap;
-            word-break: break-all;
+            word-break: break-word;
         }
         table {
             width: 100%;
@@ -41,6 +41,11 @@
             border: 1px solid #ccc;
             padding: 6px 10px;
             text-align: left;
+        }
+        input[type=text] {
+            width: 95%;
+            font-size: 15px;
+            padding: 4px 6px;
         }
     </style>
 </head>
@@ -68,11 +73,15 @@
     </div>
 
     <script>
+        // 추출된 일정을 저장하는 전역 배열
         let extractedSchedules = [];
 
+        /**
+         *  일정 텍스트를 서버에 전송하여 파싱 결과(시간, 장소, 이벤트)를 받아 표시
+         */
         async function extractSchedule() {
             const text = document.getElementById('input-schedule').value.trim();
-            console.log("[입력 일괄 텍스트]", text);
+
             if (!text) {
                 alert('일정을 입력해주세요.');
                 return;
@@ -84,22 +93,24 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ text })
                 });
+
                 if (!res.ok) throw new Error(`Error: ${res.statusText}`);
 
                 const data = await res.json();
-                console.log("[서버로부터 받은 추출 결과]", data.schedules);
-                const schedules = data.schedules;
-                extractedSchedules = schedules;
 
+                extractedSchedules = data.schedules;
+
+                // 결과 테이블 tbody 선택 및 초기화
                 const tbody = document.querySelector('#output-schedule tbody');
                 tbody.innerHTML = '';
 
-                if (!schedules || schedules.length === 0) {
+                if (!extractedSchedules || extractedSchedules.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">일정이 없습니다.</td></tr>';
                     return;
                 }
 
-                schedules.forEach((item, idx) => {
+                // 각 일정 항목을 행(tr)과 입력칸으로 생성
+                extractedSchedules.forEach((item, idx) => {
                     let timeText = '';
                     if (item.time) {
                         if (typeof item.time === 'string') {
@@ -123,18 +134,23 @@
                     `;
                     tbody.appendChild(tr);
                 });
+
             } catch (err) {
                 alert('일정 추출에 실패했습니다: ' + err.message);
+                console.error(err);
             }
         }
 
+        /**
+         *  추출된 일정을 사용자 수정 후, 중복 확인 -> 구글 캘린더 저장 처리
+         */
         async function saveSchedule() {
             if (!extractedSchedules || extractedSchedules.length === 0) {
                 alert('먼저 일정을 추출해주세요.');
                 return;
             }
-            
-            // 수정된 값 반영 (변환 없이 그대로)
+
+            // 테이블 내 입력값에서 수정된 일정 정보 반영
             const rows = document.querySelectorAll('#output-schedule tbody tr');
             rows.forEach((row, idx) => {
                 extractedSchedules[idx] = {
@@ -143,19 +159,19 @@
                     event: row.querySelector('.event-input').value.trim(),
                 };
             });
-            console.log("[저장 전 최종 스케줄 데이터]", extractedSchedules);
 
             try {
-                // 1) 중복 일정 확인 (API 경로 정확히 맞춰서 사용)
+                // 1) 중복 일정 확인 API 호출
                 const checkRes = await fetch('/check_duplicates/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(extractedSchedules)
                 });
-                if (!checkRes.ok) throw new Error(`Error: ${checkRes.statusText}`);
 
+                if (!checkRes.ok) throw new Error(`Error: ${checkRes.statusText}`);
                 const checkData = await checkRes.json();
 
+                // 중복 건 존재 시 사용자에게 확인 요청
                 if (checkData.has_duplicates) {
                     const dupInfo = checkData.duplicates.map(d => 
                         `기존 일정: ${d.existing_event.summary} @ ${d.existing_event.location} (${d.existing_event.start.dateTime || d.existing_event.start.date})`
@@ -168,26 +184,28 @@
                     }
                 }
 
-                // 2) 저장 진행
+                // 2) 중복 확인 후 등록 API 호출
                 const saveRes = await fetch('/register-google-calendar/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(extractedSchedules)
                 });
+
                 if (!saveRes.ok) throw new Error(`Error: ${saveRes.statusText}`);
 
                 const saveResult = await saveRes.json();
-                alert('일정이 구글 캘린더에 저장되었습니다! 등록된 이벤트 ID:\n' + JSON.stringify(saveResult.created_event_ids, null, 2));
+                alert('일정이 구글 캘린더에 저장되었습니다! 등록된 이벤트 ID:\n' + 
+                      JSON.stringify(saveResult.created_event_ids, null, 2));
 
-                // 결과 초기화
+                // 결과 테이블 초기화 및 상태 초기화
                 document.querySelector('#output-schedule tbody').innerHTML = '';
                 extractedSchedules = [];
+
             } catch (err) {
                 alert('일정 저장 실패: ' + err.message);
+                console.error(err);
             }
         }
-
-        
     </script>
 </body>
 </html>
