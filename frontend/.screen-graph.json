@@ -1,0 +1,22 @@
+{
+  "nodes": [
+    {
+      "id": "src/screens/MainPage/MainPage.jsx",
+      "label": "MainPage",
+      "routes": [
+        "/"
+      ],
+      "dataModelId": "1:902",
+      "isRoot": true
+    },
+    {
+      "id": "src/screens/MemoPage/Memo.jsx",
+      "label": "Memo",
+      "routes": [
+        "/memo"
+      ],
+      "dataModelId": "1:777"
+    }
+  ],
+  "edges": []
+}
