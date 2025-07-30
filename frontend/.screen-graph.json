@@ -14,9 +14,41 @@
       "label": "Memo",
       "routes": [
         "/memo"
-      ],
-      "dataModelId": "1:777"
+      ]
     }
   ],
-  "edges": []
+  "edges": [
+    {
+      "id": "src\\components\\NavBar.jsx:26:6-to-src\\screens\\MemoPage\\Memo.jsx",
+      "source": "src\\screens\\MainPage\\MainPage.jsx",
+      "target": "src\\screens\\MemoPage\\Memo.jsx",
+      "data": {
+        "viaRoute": "/memo",
+        "trigger": {
+          "element": "<HashLink\r\n        to=\"/memo\"\r\n        className=\"relative w-fit font-body-text font-[number:var(--body-text-font-weight)]  \r\n          text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] \r\n          leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)] cursor-pointer\"\r\n      >\r\n        Memo\r\n      </HashLink>",
+          "line": 26,
+          "endLine": 33,
+          "column": 6,
+          "endColumn": 17,
+          "sourceFile": "src\\components\\NavBar.jsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\NavBar.jsx:26:6-to-src\\screens\\MemoPage\\Memo.jsx",
+      "source": "src\\screens\\MainPage\\MainPage.jsx",
+      "target": "src\\screens\\MemoPage\\Memo.jsx",
+      "data": {
+        "viaRoute": "/memo",
+        "trigger": {
+          "element": "<HashLink\r\n        to=\"/memo\"\r\n        className=\"relative w-fit font-body-text font-[number:var(--body-text-font-weight)]  \r\n          text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] \r\n          leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)] cursor-pointer\"\r\n      >\r\n        Memo\r\n      </HashLink>",
+          "line": 26,
+          "endLine": 33,
+          "column": 6,
+          "endColumn": 17,
+          "sourceFile": "src\\components\\NavBar.jsx"
+        }
+      }
+    }
+  ]
 }
