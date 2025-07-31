@@ -6,14 +6,14 @@ const NavBar = () => (
   <div className="fixed w-full h-[164px] top-0 left-0 bg-white z-50 shadow">
     <div className="inline-flex items-center justify-end gap-8 absolute top-14 left-[1300px]">
       <HashLink
-        to="/#about-us"
-        smooth
-        className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)] 
-          text-black text-[length:var(--body-text-font-size)] tracking-[var(--body-text-letter-spacing)] 
-          leading-[var(--body-text-line-height)] whitespace-nowrap [font-style:var(--body-text-font-style)] cursor-pointer"
-      >
+        to="#about"
+        scroll={el => {
+          const y = el.getBoundingClientRect().top + window.pageYOffset - NAV_HEIGHT - EXTRA_GAP;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        }}>
         About
       </HashLink>
+
       <HashLink
         to="/#skills-section"
         smooth
@@ -24,7 +24,7 @@ const NavBar = () => (
         Skills
       </HashLink>
       <a
-        href="http://3.106.252.194:8000/"
+        href="http://3.106.252.194:3000/"
         target="_blank"
         rel="noopener noreferrer"
         className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)]  

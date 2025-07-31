@@ -6,6 +6,7 @@ module.exports = {
       fontFamily: {
         "body-text": "var(--body-text-font-family)",
         subheading: "var(--subheading-font-family)",
+        'pretendard': ['Pretendard', 'sans-serif'],
       },
       boxShadow: {
         "button-shadow": "var(--button-shadow)",
