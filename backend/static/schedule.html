@@ -214,7 +214,7 @@
 </head>
 <body>
     <div class="container">
-        <a href="http://3.106.252.194:8000/" style="display:block;width:100%;">
+        <a href="http://localhost:8001/" style="display:block;width:100%;">
             <img
             src="static/planup_logo.png"
             alt="Plan Up 로고"
@@ -294,6 +294,7 @@
 
         async function extractSchedule() {
             const text = document.getElementById('input-schedule').value.trim();
+            console.log('[입력된 일정 원문]', text);  // <-- 입력값 콘솔에 출력
             if (!text) {
                 openModal('입력 오류', '일정을 입력해주세요.');
                 return;
@@ -312,6 +313,7 @@
                 if (!res.ok) throw new Error(`Error: ${res.statusText}`);
 
                 const data = await res.json();
+                console.log('[서버 응답: 추출된 일정]', data.schedules); // <-- 추출 데이터 콘솔 출력
                 extractedSchedules = data.schedules;
                 const tbody = document.querySelector('#output-schedule tbody');
                 tbody.innerHTML = '';
@@ -365,6 +367,7 @@
                     event: row.querySelector('.event-input').value.trim(),
                 };
             });
+             console.log('[저장 요청 데이터]', extractedSchedules); // <-- 저장 전 데이터 콘솔
             try {
                 showLoading();
 

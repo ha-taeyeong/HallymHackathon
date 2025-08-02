@@ -109,6 +109,7 @@ const MainPage = () => {
 
   // ESC로 모달 닫기 (선택)
   useEffect(() => {
+    document.title = "Plan UP";    
     if (!selectedSkill) return;
     const onKeyDown = (e) => {
       if (e.key === "Escape") setSelectedSkill(null);
@@ -123,16 +124,16 @@ const MainPage = () => {
       <main className="pt-[calc(100px+1rem)] max-w-7xl mx-auto px-6">
 
         {/* Why Make platform */}
-        <section className="mb-40 pt-16">
+        <section className="mb-40 pt-6">
           <h1 className="font-pretendard text-7xl font-bold mb-6 text-left">Why Make platform?</h1>
-          <p className="font-pretendard text-xl text-gray-700 leading-relaxed whitespace-pre-line max-w-4xl mx-auto mb-10">
-            저희는 평소 떠오른 일정이나 약속을 간단히 메모만 해도,<br />
-            자동으로 날짜, 시간, 장소를 인식해 캘린더에 등록해주는 서비스를 만들었습니다.<br />
-            바쁘고 정신없는 일상 속에서 매번 캘린더에 일정을 옮겨 적는 번거로움을 덜고,<br />
-            일정을 놓치지 않고 편하게 관리할 수 있도록 하기 위해 이 서비스를 기획하게 되었습니다.<br />
-            반복적인 입력 없이도 생산성과 편의성을 높일 수 있다는 점에서,<br />
-            누구에게나 도움이 되는 솔루션이 될 것이라 믿습니다.
-          </p>
+         <p className="font-pretendard text-xl text-gray-700 leading-relaxed whitespace-pre-line max-w-4xl mb-10 text-left">
+  저희는 평소 떠오른 일정이나 약속을 간단히 메모만 해도,<br />
+  자동으로 날짜, 시간, 장소를 인식해 캘린더에 등록해주는 서비스를 만들었습니다.<br />
+  바쁘고 정신없는 일상 속에서 매번 캘린더에 일정을 옮겨 적는 번거로움을 덜고,<br />
+  일정을 놓치지 않고 편하게 관리할 수 있도록 하기 위해 이 서비스를 기획하게 되었습니다.<br />
+  반복적인 입력 없이도 생산성과 편의성을 높일 수 있다는 점에서,<br />
+  누구에게나 도움이 되는 솔루션이 될 것이라 믿습니다.
+</p>
           <img
             src="https://c.animaapp.com/kPFgkC5m/img/image-4.png"
             alt="대표 이미지"
@@ -144,7 +145,7 @@ const MainPage = () => {
         <section id="about" className="mb-40">
           <h2 className="font-pretendard text-5xl font-extrabold mb-14 text-left">About us</h2>
           <p className="font-pretendard text-xl text-gray-700 leading-relaxed whitespace-pre-line max-w-4xl mx-auto mb-10 text-center">
-            일상을 자동화하는 일정관리 웹서비스 <b>PlanUP</b> 팀입니다.<br />
+            일상을 자동화하는 일정관리 웹서비스 <b>Plan UP</b> 팀입니다.<br />
             반복적인 일정 등록의 번거로움을 줄이고, <br />누구나 스마트하게 자신의 시간을 관리할 수 있도록 돕는 솔루션을 추구합니다.
           </p>
           <div className="flex gap-12 flex-wrap justify-center items-center text-center">
@@ -168,7 +169,7 @@ const MainPage = () => {
               />
               <h3 className="font-pretendard text-3xl font-black mb-2">이신우</h3>
               <p className="font-pretendard text-xl text-gray-700 mb-3">Frontend 개발</p>
-              <p className="font-pretendard text-gray-500 text-lg break-words">스마트IoT</p>
+              <p className="font-pretendard text-gray-500 text-lg break-words">빅데이터전공</p>
             </div>
           </div>
         </section>
@@ -217,7 +218,7 @@ const MainPage = () => {
 
         {/* Contact Section */}
         <section id="contact" className="mb-40 max-w-3xl mx-auto">
-          <h2 className="font-pretendard text-4xl font-semibold mb-8 text-left">Contact</h2>
+          <h2 className="font-pretendard text-4xl font-semibold mb-8 text-center">Contact</h2>
           <div className="font-pretendard text-xl space-y-4 text-center">
             <p>하태영: electro0218@gmail.com</p>
             <p>이신우: steven8602@naver.com</p>
