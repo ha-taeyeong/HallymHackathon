@@ -42,12 +42,14 @@ user_tokens = {}
 # 정적파일 경로 마운트
 app = FastAPI()
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # 프로젝트 루트 디렉터리 경로
-assets_path = os.path.join(BASE_DIR, "frontend", "dist", "assets")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-app.mount("/assets", StaticFiles(directory=assets_path), name="static")
-images_path = os.path.join(BASE_DIR, "frontend", "dist", "assets", "images")
+assets_path = os.path.join(BASE_DIR, "frontend", "dist", "assets")
+images_path = os.path.join(BASE_DIR, "frontend", "dist", "images")  # 변경
+
+app.mount("/assets", StaticFiles(directory=assets_path), name="assets")
 app.mount("/images", StaticFiles(directory=images_path), name="images")
+
 index_path = os.path.join(BASE_DIR, "frontend", "dist", "index.html")
 # 기본 경로 index.html 제공
 @app.get("/")
