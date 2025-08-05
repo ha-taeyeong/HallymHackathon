@@ -39,9 +39,13 @@ CLIENT_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:8001/au
 # 사용자 토큰 저장소(실제 서비스시 DB 활용)
 user_tokens = {}
 
-# FastAPI 앱 객체 생성 및 기본 설정
-app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# 정적파일 경로 마운트
+app.mount("/assets", StaticFiles(directory="frontend/dist/assets"), name="static")
+
+# 기본 경로 index.html 제공
+@app.get("/")
+async def root():
+    return FileResponse("frontend/dist/index.html")
 templates = Jinja2Templates(directory="templates")
 
 # CORS 설정 (배포시 보안 항상 확인)
