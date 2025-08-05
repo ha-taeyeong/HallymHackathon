@@ -1,7 +1,7 @@
 import React,{useState} from "react";
 import { HashLink } from 'react-router-hash-link';
 import { Rectangle } from "../../components/Rectangle";
-import NavBar from "../../components/NavBar";
+import NavBar from "../../components/FixedNavBar";
 
 const Memo = () => {
   const [memo1, setMemo1] = useState("");
