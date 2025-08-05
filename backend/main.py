@@ -105,7 +105,7 @@ def pick_valid_location(locations: List[str]) -> str:
 # --------------------
 # 기본 페이지/인증 엔드포인트
 # --------------------
-@app.get("/")
+@app.get("/home")
 def home():
     """홈 페이지 반환"""
     try:
