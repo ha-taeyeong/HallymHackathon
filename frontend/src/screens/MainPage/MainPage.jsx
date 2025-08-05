@@ -109,7 +109,7 @@ const MainPage = () => {
 
   // ESC로 모달 닫기 (선택)
   useEffect(() => {
-    document.title = "Plan UP";    
+    document.title = "Plan Up";    
     if (!selectedSkill) return;
     const onKeyDown = (e) => {
       if (e.key === "Escape") setSelectedSkill(null);
@@ -217,9 +217,9 @@ const MainPage = () => {
 
 
         {/* Contact Section */}
-        <section id="contact" className="mb-40 max-w-3xl mx-auto">
-          <h2 className="font-pretendard text-4xl font-semibold mb-8 text-center">Contact</h2>
-          <div className="font-pretendard text-xl space-y-4 text-center">
+        <section id="contact" className="mb-40 max-w-3xl mx-auto pb-32">
+          <h2 className="font-pretendard text-5xl font-extrabold mb-8 text-center">Contact</h2>
+          <div className="font-pretendard text-xl flex flex-col md:flex-row justify-center items-center gap-12 text-center">
             <p>하태영: electro0218@gmail.com</p>
             <p>이신우: steven8602@naver.com</p>
           </div>
