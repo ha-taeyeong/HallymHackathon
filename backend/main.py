@@ -42,7 +42,12 @@ user_tokens = {}
 # 정적파일 경로 마운트
 app = FastAPI()
 
-app.mount("/assets", StaticFiles(directory="frontend/dist/assets"), name="static")
+# 프로젝트 최상위 디렉터리 위치 탐색
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+assets_dir = os.path.join(BASE_DIR, "frontend", "dist", "assets")
+
+app.mount("/assets", StaticFiles(directory=assets_dir), name="static")
 
 # 기본 경로 index.html 제공
 @app.get("/")
