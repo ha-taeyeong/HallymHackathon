@@ -49,6 +49,7 @@ images_path = os.path.join(BASE_DIR, "frontend", "dist", "images")  # 변경
 
 app.mount("/assets", StaticFiles(directory=assets_path), name="assets")
 app.mount("/images", StaticFiles(directory=images_path), name="images")
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "frontend", "dist", "static")), name="static")
 
 index_path = os.path.join(BASE_DIR, "frontend", "dist", "index.html")
 # 기본 경로 index.html 제공
