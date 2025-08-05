@@ -13,7 +13,7 @@ from typing import List, Optional
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
@@ -34,20 +34,25 @@ nlp = stanza.Pipeline(lang="ko", processors="tokenize,pos,lemma")
 load_dotenv()
 CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-CLIENT_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:8001/auth/callback")
+CLIENT_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "http://54.252.56.180:8001/auth/callback")
 
 # 사용자 토큰 저장소(실제 서비스시 DB 활용)
 user_tokens = {}
 
 # 정적파일 경로 마운트
 app = FastAPI()
-app.mount("/assets", StaticFiles(directory="frontend/dist/assets"), name="static")
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # 프로젝트 루트 디렉터리 경로
+assets_path = os.path.join(BASE_DIR, "frontend", "dist", "assets")
+
+app.mount("/assets", StaticFiles(directory=assets_path), name="static")
+images_path = os.path.join(BASE_DIR, "frontend", "dist", "assets", "images")
+app.mount("/images", StaticFiles(directory=images_path), name="images")
+index_path = os.path.join(BASE_DIR, "frontend", "dist", "index.html")
 # 기본 경로 index.html 제공
 @app.get("/")
 async def root():
-    return FileResponse("frontend/dist/index.html")
-templates = Jinja2Templates(directory="templates")
+    return FileResponse(index_path)
 
 # CORS 설정 (배포시 보안 항상 확인)
 app.add_middleware(
