@@ -40,6 +40,8 @@ CLIENT_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:8001/au
 user_tokens = {}
 
 # 정적파일 경로 마운트
+app = FastAPI()
+
 app.mount("/assets", StaticFiles(directory="frontend/dist/assets"), name="static")
 
 # 기본 경로 index.html 제공
