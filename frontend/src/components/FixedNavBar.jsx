@@ -91,7 +91,7 @@ const FixedNavBar = () => (
         Contact
       </HashLink>
       <a
-        href="http://54.252.56.180:8000/"
+        href="http://54.252.56.180:8000/home"
         target="_blank"
         rel="noopener noreferrer"
         className="
