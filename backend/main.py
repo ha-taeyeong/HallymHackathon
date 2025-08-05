@@ -13,7 +13,7 @@ from typing import List, Optional
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
@@ -41,13 +41,7 @@ user_tokens = {}
 
 # 정적파일 경로 마운트
 app = FastAPI()
-
-# 프로젝트 최상위 디렉터리 위치 탐색
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-assets_dir = os.path.join(BASE_DIR, "frontend", "dist", "assets")
-
-app.mount("/assets", StaticFiles(directory=assets_dir), name="static")
+app.mount("/assets", StaticFiles(directory="frontend/dist/assets"), name="static")
 
 # 기본 경로 index.html 제공
 @app.get("/")
