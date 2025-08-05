@@ -8,7 +8,7 @@ const EXTRA_GAP = 24;   // 추가 여백(px)
 const scrollHashWithOffset = () => {
   if (window.location.hash) {
     const id = window.location.hash.replace("#", "");
-    const element = document.getElementById(id);
+    const element = document.getElementById(id); 
     if (element) {
       const yOffset = element.getBoundingClientRect().top + window.pageYOffset - NAV_HEIGHT - EXTRA_GAP;
       window.scrollTo({ top: yOffset, behavior: "smooth" });
