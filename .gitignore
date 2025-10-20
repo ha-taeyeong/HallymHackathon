@@ -36,6 +36,8 @@ dist/
 # key
 .env
 
-# mov
-.mov
+*.tar.gz
+*.mov
+backend/nohup.out
+
 
