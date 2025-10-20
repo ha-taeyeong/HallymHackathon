@@ -35,3 +35,10 @@ dist/
 
 # key
 .env
+
+*.tar.gz
+*.mov
+backend/nohup.out
+
+
+.DS_Store
