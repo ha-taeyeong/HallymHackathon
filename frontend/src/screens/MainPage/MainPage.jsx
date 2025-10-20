@@ -20,12 +20,12 @@ const scrollHashWithOffset = () => {
 const frontendSkills = [
   {
     name: "HTML5",
-    logo: "/images/HTML5.png",
+    logo: "/images/html5.png",
     description: "HTML5는 웹페이지의 구조를 정의하는 최신 마크업 언어로, 폼/미디어/인터랙션 향상 등 풍부한 웹 환경을 제공합니다.",
   },
   {
     name: "CSS3",
-    logo: "/images/CSS3.png",
+    logo: "/images/css3.png",
     description: "CSS3는 웹페이지의 디자인을 담당하며 레이아웃·애니메이션 등 다채로운 시각 효과를 구현할 수 있습니다.",
   },
   {
@@ -40,7 +40,7 @@ const frontendSkills = [
   },
   {
     name: "Node.js",
-    logo: "/images/Node.js.png",
+    logo: "/images/node.js.png",
     description: "Node.js는 JavaScript 런타임 환경으로, 서버 개발에 널리 쓰이며 비동기 프로그래밍이 강점입니다.",
   },
   {

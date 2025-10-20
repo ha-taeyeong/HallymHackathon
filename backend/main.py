@@ -34,7 +34,7 @@ nlp = stanza.Pipeline(lang="ko", processors="tokenize,pos,lemma")
 load_dotenv()
 CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-CLIENT_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "http://52.63.156.209.nip.io:8000/auth/callback")
+CLIENT_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "http://3.104.198.251.nip.io:8001/auth/callback")
 
 # 사용자 토큰 저장소(실제 서비스시 DB 활용)
 user_tokens = {}
@@ -110,10 +110,17 @@ def pick_valid_location(locations: List[str]) -> str:
 def home():
     """홈 페이지 반환"""
     try:
-        with open("static/home.html", encoding="utf-8") as f:
+        # main.py의 위치(backend)를 기준으로 home.html의 경로를 명확히 지정
+        # __file__의 디렉토리 + static + home.html
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        home_path = os.path.join(base_path, "static", "home.html")
+        
+        with open(home_path, encoding="utf-8") as f: # 수정된 경로 사용
             return HTMLResponse(f.read())
+            
     except Exception as e:
-        return HTMLResponse(f"<h2>홈페이지 로딩 실패: {e}</h2>")
+        # 오류 발생 시 어떤 경로에서 파일을 찾았는지 출력하도록 수정하면 디버깅에 도움됨
+        return HTMLResponse(f"<h2>홈페이지 로딩 실패: [Errno 2] {home_path} 파일을 찾을 수 없습니다. (원인: {e})</h2>")
 
 @app.get("/login")
 def login():
@@ -153,7 +160,11 @@ def auth_callback(code: str):
 def schedule():
     """일정 등록(입력) 페이지 반환"""
     try:
-        with open("static/schedule.html", encoding="utf-8") as f:
+        # os.path.dirname(__file__)는 /home/ubuntu/backend 경로를 가리킵니다.
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        schedule_path = os.path.join(base_path, "static", "schedule.html") # 경로 설정
+
+        with open(schedule_path, encoding="utf-8") as f:
             return HTMLResponse(f.read())
     except Exception as e:
         return HTMLResponse(f"<h2>일정 페이지 로딩 실패: {e}</h2>")
