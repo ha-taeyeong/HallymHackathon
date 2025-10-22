@@ -24,7 +24,7 @@ const NavBar = () => (
         Skills
       </HashLink>
       <a
-        href="http://3.104.198.251:8001/home"
+        href="https://3.104.198.251.nip.io/home"
         target="_blank"
         rel="noopener noreferrer"
         className="relative w-fit font-body-text font-[number:var(--body-text-font-weight)]  

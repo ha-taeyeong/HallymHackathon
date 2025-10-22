@@ -34,7 +34,7 @@ nlp = stanza.Pipeline(lang="ko", processors="tokenize,pos,lemma")
 load_dotenv()
 CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-CLIENT_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "http://3.104.198.251.nip.io:8001/auth/callback")
+CLIENT_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "https://3.104.198.251.nip.io/auth/callback")
 
 # 사용자 토큰 저장소(실제 서비스시 DB 활용)
 user_tokens = {}
@@ -137,6 +137,24 @@ def login():
     req_url = requests.Request('GET', url, params=params).prepare().url
     return RedirectResponse(req_url)
 
+# @app.get("/auth/callback")
+# def auth_callback(code: str):
+#     # 받은 code로 access token 요청(구글 인증 완료 처리)
+#     token_url = "https://oauth2.googleapis.com/token"
+#     data = {
+#         "code": code,
+#         "client_id": CLIENT_ID,
+#         "client_secret": CLIENT_SECRET,
+#         "redirect_uri": CLIENT_REDIRECT_URI,
+#         "grant_type": "authorization_code"
+#     }
+#     response = requests.post(token_url, data=data)
+#     token_data = response.json()
+#     if "access_token" in token_data:
+#         user_tokens['default'] = token_data
+#         return RedirectResponse(url="/schedule")
+#     else:
+#         raise HTTPException(status_code=400, detail="토큰 요청 실패")
 @app.get("/auth/callback")
 def auth_callback(code: str):
     # 받은 code로 access token 요청(구글 인증 완료 처리)
@@ -149,12 +167,26 @@ def auth_callback(code: str):
         "grant_type": "authorization_code"
     }
     response = requests.post(token_url, data=data)
+    
+    # ----------------------------------------------------
+    # 디버깅 코드 추가: 토큰 요청이 실패하면 로그에 에러를 명확히 출력
+    try:
+        response.raise_for_status() # HTTP 4xx, 5xx 에러 포착
+    except requests.exceptions.HTTPError as e:
+        # 오류가 발생하면 응답 텍스트를 출력하고 HTTP 500 에러를 반환합니다.
+        print(f"ERROR: Google Token Exchange Failed with HTTP Status {response.status_code}: {response.text}")
+        raise HTTPException(status_code=500, detail="Google 토큰 교환 중 서버 오류 발생. 로그 확인.")
+    # ----------------------------------------------------
+    
     token_data = response.json()
     if "access_token" in token_data:
         user_tokens['default'] = token_data
         return RedirectResponse(url="/schedule")
     else:
+        # 토큰 필드가 없을 때도 로그를 출력합니다.
+        print(f"토큰 요청 실패 (Access Token 필드 없음): {token_data}")
         raise HTTPException(status_code=400, detail="토큰 요청 실패")
+    
 
 @app.get("/schedule")
 def schedule():
