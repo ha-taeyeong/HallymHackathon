@@ -34,7 +34,9 @@ nlp = stanza.Pipeline(lang="ko", processors="tokenize,pos,lemma")
 load_dotenv()
 CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-CLIENT_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "https://3.104.198.251.nip.io/auth/callback")
+CLIENT_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "https://www.planup.com/auth/callback")
+# CLIENT_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "https://3.104.198.251.nip.io/auth/callback")
+# CLIENT_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "https://localhost/auth/callback")
 
 # 사용자 토큰 저장소(실제 서비스시 DB 활용)
 user_tokens = {}
