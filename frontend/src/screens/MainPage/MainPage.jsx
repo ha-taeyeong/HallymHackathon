@@ -98,16 +98,13 @@ const backendSkills = [
   },
 ];
 
-// ★ 2. MainPage 컴포넌트
 const MainPage = () => {
   useEffect(() => {
     setTimeout(scrollHashWithOffset, 300);
   }, []);
 
-  // 모달용 상태
   const [selectedSkill, setSelectedSkill] = useState(null);
 
-  // ESC로 모달 닫기 (선택)
   useEffect(() => {
     document.title = "Plan Up";    
     if (!selectedSkill) return;
@@ -119,21 +116,19 @@ const MainPage = () => {
   }, [selectedSkill]);
 
   return (
-    <div className="bg-white min-h-screen w-full">
+    <div className="bg-white min-h-screen w-full font-pretendard">
       <FixedNavBar />
       <main className="pt-[calc(100px+1rem)] max-w-7xl mx-auto px-6">
 
-        {/* Why Make platform */}
+        {/* 1. Why Make platform Section */}
         <section className="mb-40 pt-6">
-          <h1 className="font-pretendard text-7xl font-bold mb-6 text-left">Why Make platform?</h1>
-         <p className="font-pretendard text-xl text-gray-700 leading-relaxed whitespace-pre-line max-w-4xl mb-10 text-left">
-  저희는 평소 떠오른 일정이나 약속을 간단히 메모만 해도,<br />
-  자동으로 날짜, 시간, 장소를 인식해 캘린더에 등록해주는 서비스를 만들었습니다.<br />
-  바쁘고 정신없는 일상 속에서 매번 캘린더에 일정을 옮겨 적는 번거로움을 덜고,<br />
-  일정을 놓치지 않고 편하게 관리할 수 있도록 하기 위해 이 서비스를 기획하게 되었습니다.<br />
-  반복적인 입력 없이도 생산성과 편의성을 높일 수 있다는 점에서,<br />
-  누구에게나 도움이 되는 솔루션이 될 것이라 믿습니다.
-</p>
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-left">Why Make platform?</h1>
+          <p className="text-lg md:text-xl text-gray-700 leading-relaxed max-w-4xl mb-10 text-left">
+            저희는 평소 떠오른 일정이나 약속을 간단히 메모만 해도,<br />
+            자동으로 날짜, 시간, 장소를 인식해 캘린더에 등록해주는 서비스를 만들었습니다.<br />
+            매번 캘린더에 일정을 옮겨 적는 번거로움을 덜고,<br />
+            생산성과 편의성을 높일 수 있는 솔루션이 될 것이라 믿습니다.
+          </p>
           <img
             src="https://c.animaapp.com/kPFgkC5m/img/image-4.png"
             alt="대표 이미지"
@@ -141,115 +136,117 @@ const MainPage = () => {
           />
         </section>
 
-        {/* About us Section */}
-        <section id="about" className="mb-40">
-          <h2 className="font-pretendard text-5xl font-extrabold mb-14 text-left">About us</h2>
-          <p className="font-pretendard text-xl text-gray-700 leading-relaxed whitespace-pre-line max-w-4xl mx-auto mb-10 text-center">
-            일상을 자동화하는 일정관리 웹서비스 <b>Plan UP</b> 팀입니다.<br />
-            반복적인 일정 등록의 번거로움을 줄이고, <br />누구나 스마트하게 자신의 시간을 관리할 수 있도록 돕는 솔루션을 추구합니다.
+        {/* 2. About us Section */}
+        <section id="about" className="mb-40 scroll-mt-28">
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-14 text-left">About us</h2>
+          <p className="text-xl text-gray-700 leading-relaxed max-w-4xl mx-auto mb-10 text-center">
+            일상을 자동화하는 일정관리 웹서비스 <b>Plan UP</b> 팀입니다.
           </p>
-          <div className="flex gap-12 flex-wrap justify-center items-center text-center">
+          <div className="flex gap-12 flex-wrap justify-center items-center">
             {/* 하태영 */}
-            <div className="w-96 bg-gray-50 rounded-2xl shadow-xl p-10 flex flex-col items-center">
-              <img
-                src="https://c.animaapp.com/kPFgkC5m/img/image-5-1.png"
-                alt="하태영"
-                className="w-56 h-56 rounded-full object-cover mb-6"
-              />
-              <h3 className="font-pretendard text-3xl font-black mb-2">하태영</h3>
-              <p className="font-pretendard text-xl text-gray-700 mb-3">Backend 개발</p>
-              <p className="font-pretendard text-gray-500 text-lg break-words">스마트IoT</p>
+            <div className="w-80 md:w-96 bg-gray-50 rounded-2xl shadow-xl p-10 flex flex-col items-center">
+              <img src="https://c.animaapp.com/kPFgkC5m/img/image-5-1.png" alt="하태영" className="w-48 h-48 md:w-56 md:h-56 rounded-full object-cover mb-6" />
+              <h3 className="text-3xl font-black mb-2">하태영</h3>
+              <p className="text-xl text-gray-700 mb-3">Backend 개발</p>
+              <p className="text-gray-500 text-lg">스마트IoT</p>
             </div>
             {/* 이신우 */}
-            <div className="w-96 bg-gray-50 rounded-2xl shadow-xl p-10 flex flex-col items-center">
-              <img
-                src="https://c.animaapp.com/kPFgkC5m/img/image-7@2x.png"
-                alt="이신우"
-                className="w-56 h-56 rounded-full object-cover mb-6"
-              />
-              <h3 className="font-pretendard text-3xl font-black mb-2">이신우</h3>
-              <p className="font-pretendard text-xl text-gray-700 mb-3">Frontend 개발</p>
-              <p className="font-pretendard text-gray-500 text-lg break-words">빅데이터전공</p>
+            <div className="w-80 md:w-96 bg-gray-50 rounded-2xl shadow-xl p-10 flex flex-col items-center">
+              <img src="https://c.animaapp.com/kPFgkC5m/img/image-7@2x.png" alt="이신우" className="w-48 h-48 md:w-56 md:h-56 rounded-full object-cover mb-6" />
+              <h3 className="text-3xl font-black mb-2">이신우</h3>
+              <p className="text-xl text-gray-700 mb-3">Frontend 개발</p>
+              <p className="text-gray-500 text-lg">빅데이터전공</p>
             </div>
           </div>
         </section>
 
-        {/* Skills Section */}
-        <section id="skills" className="mb-40">
-          <h2 className="font-pretendard text-5xl font-extrabold mb-16 tracking-tight text-left">Skills</h2>
-          {/* Frontend Skills */}
-          <div className="mb-24 max-w-7xl mx-auto px-6 md:px-0">
-            <h3 className="font-pretendard text-3xl font-semibold mb-12 text-left">Frontend</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-20 gap-x-20 justify-items-center items-center">
+        {/* ★ 3. Memo Section (새로 추가됨) ★ */}
+        <section id="memo" className="mb-40 scroll-mt-28">
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-14 text-left text-blue-700">Memo</h2>
+          <div className="bg-blue-50 rounded-3xl p-8 md:p-16 flex flex-col md:flex-row items-center gap-12 border border-blue-100 shadow-sm">
+            <div className="flex-1 text-left">
+              <h3 className="text-3xl font-bold mb-6">자연어 인식 메모</h3>
+              <p className="text-xl text-gray-700 leading-relaxed mb-10">
+                복잡한 클릭 없이 한 줄의 메모만 남기세요.<br />
+                인공지능이 텍스트에서 <b>시간, 날짜, 장소</b>를 추출하여<br />
+                당신의 캘린더에 자동으로 등록합니다.
+              </p>
+              <a 
+                href="https://planup.p-e.kr/home" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-block bg-blue-600 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-md hover:-translate-y-1"
+              >
+                서비스 이용해보기
+              </a>
+            </div>
+            <div className="flex-1 w-full max-w-md bg-white p-6 rounded-2xl shadow-2xl border border-blue-50 rotate-1 md:rotate-2">
+              <div className="flex gap-2 mb-4">
+                <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                <div className="w-3 h-3 rounded-full bg-green-400"></div>
+              </div>
+              <p className="text-2xl font-medium text-gray-800 italic">"내일 오후 2시에 강남역에서 회의"</p>
+              <div className="mt-6 pt-4 border-t border-dashed border-blue-200">
+                <p className="text-blue-600 font-bold">✓ 2024-11-20 14:00 등록 완료</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 4. Skills Section */}
+        <section id="skills" className="mb-40 scroll-mt-28">
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-16 text-left">Skills</h2>
+          {/* Frontend */}
+          <div className="mb-24">
+            <h3 className="text-3xl font-semibold mb-12 text-left">Frontend</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 justify-items-center">
               {frontendSkills.map(skill => (
-                <div
-                  key={skill.name}
-                  className="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform duration-300"
-                  onClick={() => setSelectedSkill(skill)}
-                  tabIndex={0}
-                  aria-label={skill.name + " 상세"}
-                >
-                  <img src={skill.logo} alt={skill.name} className="h-28 object-contain mb-3" />
-                  <span className="font-pretendard text-lg text-gray-600">{skill.name}</span>
+                <div key={skill.name} onClick={() => setSelectedSkill(skill)} className="flex flex-col items-center cursor-pointer hover:scale-110 transition-transform">
+                  <img src={skill.logo} alt={skill.name} className="h-24 md:h-28 object-contain mb-3" />
+                  <span className="text-lg text-gray-600 font-bold">{skill.name}</span>
                 </div>
               ))}
             </div>
           </div>
-          {/* Backend & Infra */}
-          <div className="max-w-7xl mx-auto px-6 md:px-0">
-            <h3 className="font-pretendard text-3xl font-semibold mb-12 text-left">Backend & Infra</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-20 gap-x-20 justify-items-center items-center mb-12">
+          {/* Backend */}
+          <div>
+            <h3 className="text-3xl font-semibold mb-12 text-left">Backend & Infra</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 justify-items-center">
               {backendSkills.map(skill => (
-                <div
-                  key={skill.name}
-                  className="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform duration-300"
-                  onClick={() => setSelectedSkill(skill)}
-                  tabIndex={0}
-                  aria-label={skill.name + " 상세"}
-                >
-                  <img src={skill.logo} alt={skill.name} className="h-36 object-contain mb-3" />
-                  <span className="font-pretendard text-lg text-gray-600">{skill.name}</span>
+                <div key={skill.name} onClick={() => setSelectedSkill(skill)} className="flex flex-col items-center cursor-pointer hover:scale-110 transition-transform">
+                  <img src={skill.logo} alt={skill.name} className="h-24 md:h-36 object-contain mb-3" />
+                  <span className="text-lg text-gray-600 font-bold">{skill.name}</span>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-
-        {/* Contact Section */}
-        <section id="contact" className="mb-40 max-w-3xl mx-auto pb-32">
-          <h2 className="font-pretendard text-5xl font-extrabold mb-8 text-center">Contact</h2>
-          <div className="font-pretendard text-xl flex flex-col md:flex-row justify-center items-center gap-12 text-center">
+        {/* 5. Contact Section */}
+        <section id="contact" className="mb-40 pb-32 scroll-mt-28">
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-8 text-center">Contact</h2>
+          <div className="text-xl flex flex-col md:flex-row justify-center items-center gap-12 text-gray-700">
             <p>하태영: electro0218@gmail.com</p>
             <p>이신우: steven8602@naver.com</p>
           </div>
         </section>
 
-        {/* === 스킬 상세 설명 모달 === */}
+        {/* 스킬 모달 (생략 없이 유지) */}
         {selectedSkill && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 animate-fadeIn">
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[100] animate-fadeIn">
             <div className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4 relative shadow-2xl">
-              <button
-                onClick={() => setSelectedSkill(null)}
-                className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-200 focus:outline-none transition"
-                aria-label="닫기"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-600 hover:text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              <button onClick={() => setSelectedSkill(null)} className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              <img
-                src={selectedSkill.logo}
-                alt={selectedSkill.name}
-                className="h-24 object-contain mb-5 mx-auto block"
-              />
+              <img src={selectedSkill.logo} alt={selectedSkill.name} className="h-24 object-contain mb-5 mx-auto" />
               <h3 className="text-2xl font-extrabold mb-3 text-center">{selectedSkill.name}</h3>
-              <p className="text-gray-700 text-lg text-center whitespace-pre-line">{selectedSkill.description}</p>
+              <p className="text-gray-700 text-lg text-center">{selectedSkill.description}</p>
             </div>
           </div>
         )}
-
-
       </main>
     </div>
   );
