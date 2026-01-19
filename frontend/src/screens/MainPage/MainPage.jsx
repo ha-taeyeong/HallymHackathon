@@ -180,7 +180,11 @@ const MainPage = () => {
                 서비스 이용해보기
               </a>
             </div>
+<<<<<<< HEAD
             <div className="flex-1 w-full max-w-md bg-white p-6 rounded-2xl shadow-2xl border borderd-blue-50 rotate-1 md:rotate-2">
+=======
+            <div className="flex-1 w-full max-w-md bg-white p-6 rounded-2xl shadow-2xl border border-blue-50 rotate-1 md:rotate-2">
+>>>>>>> c242d9b63ce9b07ff6bd6220c8ebaeeb64c3b944
               <div className="flex gap-2 mb-4">
                 <div className="w-3 h-3 rounded-full bg-red-400"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
@@ -247,6 +251,7 @@ const MainPage = () => {
             </div>
           </div>
         )}
+<<<<<<< HEAD
         <footer className="py-10 border-t border-gray-100 text-center">
           <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-500">© 2025 Plan Up. All rights reserved.</p>
@@ -265,6 +270,8 @@ const MainPage = () => {
             </div>
           </div>
         </footer>
+=======
+>>>>>>> c242d9b63ce9b07ff6bd6220c8ebaeeb64c3b944
       </main>
     </div>
   );

@@ -22,7 +22,11 @@ const FixedNavBar = () => {
   // 링크 정보 배열 (중복 제거 및 관리 용이성)
   const navItems = [
     { to: "#about", label: "About" },
+<<<<<<< HEAD
     { to: "#memo", label: "Memo", isSpecial: true },
+=======
+    { to: "#memo", label: "Memo", isSpecial: true }, 
+>>>>>>> c242d9b63ce9b07ff6bd6220c8ebaeeb64c3b944
     { to: "#skills", label: "Skills" },
     { to: "#contact", label: "Contact" },
   ];
