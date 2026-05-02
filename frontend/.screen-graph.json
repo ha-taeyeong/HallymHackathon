@@ -1,0 +1,53 @@
+{
+  "nodes": [
+    {
+      "id": "src/screens/MainPage/MainPage.jsx",
+      "label": "MainPage",
+      "routes": [
+        "/"
+      ],
+      "isRoot": true
+    },
+    {
+      "id": "src/screens/MemoPage/Memo.jsx",
+      "label": "Memo",
+      "routes": [
+        "/memo"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "src/components/FixedNavBar.jsx:40:6-to-src/screens/MainPage/MainPage.jsx",
+      "source": "src/screens/MainPage/MainPage.jsx",
+      "target": "src/screens/MainPage/MainPage.jsx",
+      "data": {
+        "viaRoute": "/",
+        "trigger": {
+          "element": "<Link to=\"/\" onClick={closeMenu}>\n        <img\n          src=\"https://c.animaapp.com/kPFgkC5m/img/image-21@2x.png\"\n          alt=\"로고\"\n          className=\"w-[100px] h-[50px] md:w-[130px] md:h-[65px] cursor-pointer object-contain\"\n        />\n      </Link>",
+          "line": 40,
+          "endLine": 46,
+          "column": 6,
+          "endColumn": 13,
+          "sourceFile": "src/components/FixedNavBar.jsx"
+        }
+      }
+    },
+    {
+      "id": "src/components/FixedNavBar.jsx:40:6-to-src/screens/MainPage/MainPage.jsx",
+      "source": "src/screens/MainPage/MainPage.jsx",
+      "target": "src/screens/MainPage/MainPage.jsx",
+      "data": {
+        "viaRoute": "/",
+        "trigger": {
+          "element": "<Link to=\"/\" onClick={closeMenu}>\n        <img\n          src=\"https://c.animaapp.com/kPFgkC5m/img/image-21@2x.png\"\n          alt=\"로고\"\n          className=\"w-[100px] h-[50px] md:w-[130px] md:h-[65px] cursor-pointer object-contain\"\n        />\n      </Link>",
+          "line": 40,
+          "endLine": 46,
+          "column": 6,
+          "endColumn": 13,
+          "sourceFile": "src/components/FixedNavBar.jsx"
+        }
+      }
+    }
+  ]
+}
